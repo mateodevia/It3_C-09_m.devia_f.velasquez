@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta charset=" UTF-8">
+  </head>
+
+  <body>
+    <form>
+          Fecha fin:<br>
+          <input type ="text" ng-model="fechaFin"><br>
+          Fecha inicio:<br>
+          <input type ="text" ng-model="fechaInicio"><br>
+          Fecha creación oferta: <br>
+          <input type ="text" ng-model="fechaCreacionOferta"><br>
+          Tipo contrato: <br>
+          <input type ="text" ng-model="tipoContrato"><br>
+          Número de personas:<br>
+          <input type ="text" ng-model="numPersonas"><br>
+          Alojamiento:<br>
+          <input type ="text" ng-model="alojamiento"><br>
+          Cliente:<br>
+          <input type = "text" ng-model="cliente"><br>
+          <button ui-sref= "rf5Response({
+          			fechaInicio: fechaInicio,
+                    fechaFin: fechaFin,
+                    tipoContrato: tipoContrato,
+                    numPersonas: numPersonas,
+                    alojamiento: alojamiento,
+                    fechaCreacionOferta: fechaCreacionOferta,
+                    cliente: cliente,
+          
+          })">Enviar</button>
+      </form>
+  </body>
+
+</html>

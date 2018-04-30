@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+
+  </head>
+
+  <body>
+      Desea consultar los alojamientos disponibles en un rango de fechas con ciertos servicios? <br>
+      Por favor escrieba las fechas en formato YYYY-MM-DD y los servicios deseados separados por comas ejemplo: TV_CABLE,WIFI<br>
+      
+      Fecha Inicio:<br>
+      <input type ="text" ng-model="fechaInicio"><br>
+      Fecha Fin:<br>
+      <input type ="text" ng-model="fechaFin"><br>
+      Servicios:<br>
+      <input type ="text" ng-model="servicios"><br>
+      <button ui-sref= "rfc4Response({fechaInicio: fechaInicio, fechaFin: fechaFin, servicios: servicios})">Consultar</button>
+
+
+  </body>
+
+</html>

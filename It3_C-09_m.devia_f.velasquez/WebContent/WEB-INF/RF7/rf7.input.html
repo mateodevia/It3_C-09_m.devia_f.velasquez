@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+<meta charset=" UTF-8">
+  </head>
+
+  <body>
+    <form>
+          Nombre del evento:<br>
+          <input type ="text" ng-model="evento"><br>
+          Servicios (por favor sepárelos con ',' ):<br>
+          <input type ="text" ng-model="servicios"><br>
+          Fecha de Inicio: <br>
+          <input type ="text" ng-model="fechaInicio"><br>
+          Fecha de fin: <br>
+          <input type ="text" ng-model="fechaFin"><br>
+          Tipo de contrato:<br>
+          <input type ="text" ng-model="tipoContrato"><br>
+          Número de personas por reserva:<br>
+          <input type ="text" ng-model="numPersonasPorReserva"><br>
+          Id de cliehte:<br>
+          <input type ="text" ng-model="clienteId"><br>
+          Tipo de alojamiento:<br>
+          <input type ="text" ng-model="tipo"><br>
+          Cantidad requerida:<br>
+          <input type ="text" ng-model="necesitadas"><br>
+          
+          <button ui-sref= "rf7Response({
+                	evento: evento,
+                	servicios: servicios,
+                	fechaInicio: fechaInicio,
+                	fechaFin: fechaFin,
+                	tipoContrato: tipoContrato,
+                	numPersonasPorReserva: numPersonasPorReserva,
+                	clienteId: clienteId,
+                	tipo: tipo,
+                	necesitadas: necesitadas
+                
+          
+          })">Enviar</button>
+      </form>
+  </body>
+
+</html>

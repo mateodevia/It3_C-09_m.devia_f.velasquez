@@ -1,0 +1,16 @@
+/* Styles go here */
+
+
+h3 {
+  font-size:12px;
+}
+
+h1 {
+  text-align: center;
+  color: blue;
+}
+
+.info
+{
+    max-width: 80px;
+}

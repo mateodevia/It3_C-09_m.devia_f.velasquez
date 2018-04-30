@@ -1,0 +1,16 @@
+
+<body>
+
+	<head>
+		<meta charset=" UTF-8">
+  	</head>
+
+      <p>Se retiró el alojamiento</p><br>
+      <p>Precio: {{response.precio | currency}}</p><br>
+      <p>Fecha Retiro {{response.fechaRetiro}}</p><br>
+      <p>Unidad de precio {{response.unidadDePrecio}}</p><br>
+      <p>Reservas: </p><br>
+      <div ng-show = "!(response.reservas===null)"ng-repeat = "x in response.reservas"> <p> {{x.fechaInicio}} || {{x.alojamiento}} || {{x.fechaCreacionOferta} </p> </div>
+      <p>Fecha creacion: {{response.fechaCreacion}}</p><br>
+      <p>Alojamiento: {{response.alojamiento}}</p><br>
+  </body>

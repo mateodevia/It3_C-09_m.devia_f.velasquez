@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+<meta charset=" UTF-8">
+  </head>
+
+  <body>
+    <form>
+          Carnet Uniandes:<br>
+          <input type ="text" ng-model="carnetUniandes"><br>
+          Nombre:<br>
+          <input type ="text" ng-model="nombre"><br>
+          Apellido: <br>
+          <input type ="text" ng-model="apellido"><br>
+          Tipo Cliente: <br>
+          <input type ="text" ng-model="tipoCliente"><br>
+          Tipo de Documento:<br>
+          <input type ="text" ng-model="tipoDocumento"><br>
+          Numero de Documento:<br>
+          <input type ="text" ng-model="numDocumento"><br>
+          <button ui-sref= "rf3Response({carnetUniandes: carnetUniandes, nombre: nombre, apellido: apellido, tipoCliente: tipoCliente, tipoDocumento: tipoDocumento, numDocumento: numDocumento})">Enviar</button>
+      </form>
+  </body>
+
+</html>

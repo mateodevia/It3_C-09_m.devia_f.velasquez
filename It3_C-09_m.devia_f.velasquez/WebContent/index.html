@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+
+  <head>
+  		<meta charset=" UTF-8">
+  
+    	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+    	<link rel="stylesheet" href="style.css" />
+
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
+		<script src="https://angular-ui.github.io/ui-router/release/angular-ui-router.js"></script>
+        
+        <script src="RF1/rf1.mod.js" type = "text/javascript"></script>
+        <script src="RF1/rf1.ctrl.js"type = "text/javascript"></script>
+        <script src="RF1/rf1.responseCtrl.js"type = "text/javascript"></script>
+        
+       	<script src="RF2/rf2.mod.js" type = "text/javascript"></script>
+        <script src="RF2/rf2.ctrl.js" type = "text/javascript"></script>
+        <script src="RF2/rf2.responseCtrl.js" type = "text/javascript"></script>
+        
+       	<script src="RF3/rf3.mod.js" type = "text/javascript"></script>
+        <script src="RF3/rf3.ctrl.js" type = "text/javascript"></script>
+        <script src="RF3/rf3.responseCtrl.js" type = "text/javascript"></script>
+        
+        
+        <script src="RF4/rf4.mod.js" type = "text/javascript"></script>
+        <script src="RF4/rf4.ctrl.js" type = "text/javascript"></script>
+        <script src="RF4/rf4.responseCtrl.js" type = "text/javascript"></script>
+        
+        
+          
+        <script src="RF5/rf5.mod.js" type = "text/javascript"></script>
+        <script src="RF5/rf5.ctrl.js" type = "text/javascript"></script>
+        <script src="RF5/rf5.responseCtrl.js" type = "text/javascript"></script>
+        
+        
+        
+        <script src="RF6/rf6.mod.js" type = "text/javascript"></script>
+        <script src="RF6/rf6.ctrl.js" type = "text/javascript"></script>
+        <script src="RF6/rf6.responseCtrl.js" type = "text/javascript"></script>
+        
+                
+        <script src="RF7/rf7.mod.js" type = "text/javascript"></script>
+        <script src="RF7/rf7.ctrl.js" type = "text/javascript"></script>
+        <script src="RF7/rf7.responseCtrl.js" type = "text/javascript"></script>
+        
+                      
+        <script src="RF8/rf8.mod.js" type = "text/javascript"></script>
+        <script src="RF8/rf8.ctrl.js" type = "text/javascript"></script>
+        <script src="RF8/rf8.responseCtrl.js" type = "text/javascript"></script>
+       
+       
+        <script src="RF9/rf9.mod.js"></script>
+        <script src="RF9/rf9.ctrl.js"></script>
+        <script src="RF9/rf9.responseCtrl.js"></script>
+        
+        <script src="RF10/rf10.mod.js"></script>
+        <script src="RF10/rf10.ctrl.js"></script>
+        <script src="RF10/rf10.responseCtrl.js"></script>
+        
+         
+        <script src="RFC1/rfc1.mod.js"></script>
+        <script src="RFC1/rfc1.ctrl.js"></script>
+        <script src="RFC1/rfc1.responseCtrl.js"></script>
+        
+        <script src="RFC2/rfc2.mod.js"></script>
+        <script src="RFC2/rfc2.ctrl.js"></script>
+        <script src="RFC2/rfc2.responseCtrl.js"></script>
+        
+        <script src="RFC3/rfc3.mod.js"></script>
+        <script src="RFC3/rfc3.ctrl.js"></script>
+        <script src="RFC3/rfc3.responseCtrl.js"></script>
+        
+        <script src="RFC4/rfc4.mod.js"></script>
+        <script src="RFC4/rfc4.ctrl.js"></script>
+        <script src="RFC4/rfc4.responseCtrl.js"></script>
+        
+        <script src="RFC5/rfc5.mod.js"></script>
+        <script src="RFC5/rfc5.ctrl.js"></script>
+        <script src="RFC5/rfc5.responseCtrl.js"></script>
+        
+        <script src="RFC6/rfc6.mod.js"></script>
+        <script src="RFC6/rfc6.ctrl.js"></script>
+        <script src="RFC6/rfc6.responseCtrl.js"></script>
+        
+        <script src="RFC7/rfc7.mod.js"></script>
+        <script src="RFC7/rfc7.ctrl.js"></script>
+        <script src="RFC7/rfc7.responseCtrl.js"></script>
+        
+        <script src="RFC8/rfc8.mod.js"></script>
+        <script src="RFC8/rfc8.ctrl.js"></script>
+        <script src="RFC8/rfc8.responseCtrl.js"></script>
+        
+        <script src="RFC9/rfc9.mod.js"></script>
+        <script src="RFC9/rfc9.ctrl.js"></script>
+        <script src="RFC9/rfc9.responseCtrl.js"></script>
+        
+       
+        <script src="app.js"></script>
+
+  </head>
+
+  <body class="container">
+    <div>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <td class = "info">
+              <h3>ISIS-2304 Iteracion 2</h3>
+              <h3>Felipe Velasquez</h3>
+              <h3>Mateo Devia</h3>
+            </td>
+            <td>
+              <h1><div><img src="data/logo alohandes.png"style="width:400px;height:100px;"></div></h1>
+            </td>
+          </tr>
+        </thead>
+      </table>
+    </div>
+    
+    <div>
+    <h6>Seleccione un Requerimieno</h6>
+		  <table class="table table-bordered">
+		    <tr>
+		      <td><a ui-sref="rf1">RF1</a></td>
+		      <td><a ui-sref="rf2">RF2</a></td>
+		      <td><a ui-sref="rf3">RF3</a></td>
+		      <td><a ui-sref="rf4">RF4</a></td>
+		      <td><a ui-sref="rf5">RF5</a></td>
+		    </tr>
+		    <tr>
+		      <td><a ui-sref="rf6">RF6</a></td>
+		      <td><a ui-sref="rf7">RF7</a></td>
+		      <td><a ui-sref="rf8">RF8</a></td>
+		      <td><a ui-sref="rf9">RF9</a></td>
+		      <td><a ui-sref="rf10">RF10</a></td>
+		    </tr>
+		    <tr>
+		      <td><a ui-sref="rfc1">RFC1</a></td>
+		      <td><a ui-sref="rfc2">RFC2</a></td>
+		      <td><a ui-sref="rfc3">RFC3</a></td>
+		      <td><a ui-sref="rfc4">RFC4</a></td>
+		      <td><a ui-sref="rfc5">RFC5</a></td>
+		    </tr>
+		    <tr>
+		      <td><a ui-sref="rfc6">RFC6</a></td>
+		      <td><a ui-sref="rfc7">RFC7</a></td>
+		      <td><a ui-sref="rfc8">RFC8</a></td>
+		      <td><a ui-sref="rfc9">RFC9</a></td>
+		      <td><div><img src="data/andes.png"style="width:100px;height:50px;"></div></td>
+		    </tr>
+		  </table>
+    </div>
+    <div>
+      <h6>Insercion de  datos</h6>
+			<div class="well" ui-view="inputView"></div>
+		</div> 	 
+    <div>
+      <h6>Respuesta</h6>
+      <div class="well" ui-view="outputView"></div>  
+    </div>
+  </body>
+
+</html>

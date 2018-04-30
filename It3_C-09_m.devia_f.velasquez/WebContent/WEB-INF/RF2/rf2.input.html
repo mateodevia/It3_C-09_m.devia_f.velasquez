@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+
+  </head>
+
+  <body>
+    <form>
+          Capacidad:<br>
+          <input type ="text" ng-model="capacidad"><br>
+          Compartida:<br>
+          <input type ="text" ng-model="compartida"><br>
+          Tipo de Alojamiento<br>
+          <input type ="text" ng-model="tipoAlojamiento"><br>
+          Ubicacion<br>
+          <input type ="text" ng-model="ubicacion"><br>
+          Numero de Personas que comparten:<br>
+          <input type ="text" ng-model="numComparte"><br>
+          ID del Operador:<br>
+          <input type ="text" ng-model="operador"><br>
+          <button ui-sref= "rf2Response({capacidad: capacidad, compartida: compartida, tipoAlojamiento: tipoAlojamiento, ubicacion: ubicacion, numComparte: numComparte, operador: operador})">Enviar</button>
+      </form>
+  </body>
+
+</html>

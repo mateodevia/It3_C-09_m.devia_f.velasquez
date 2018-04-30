@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+
+  </head>
+
+  <body>
+  		Quiere deshabilitar una oferta?
+  		Por favor inserte fecha en el formato YYY-MM-DD<br>
+      <form>
+          Id del Alojamiento:<br>
+          <input type ="text" ng-model="idAl"><br>
+          Fecha de Creacion:<br>
+          <input type ="text" ng-model="fechaCreacion"><br>
+          Identificacion (token):<br>
+          <input type ="text" ng-model="token"><br>
+          
+          <button ui-sref= "rf9Response({idAl: idAl, fechaCreacion: fechaCreacion, token: token})">Enviar</button>
+      </form>
+
+  </body>
+
+</html>

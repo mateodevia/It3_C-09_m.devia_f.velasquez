@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta charset=" UTF-8">
+  </head>
+
+  <body>
+    <form>
+          Precio:<br>
+          <input type ="text" ng-model="precio"><br>
+          Unidad De Precio:<br>
+          <input type ="text" ng-model="unidadDePrecio"><br>
+          Alojamiento: <br>
+          <input type ="text" ng-model="alojamiento"><br>
+          Fecha retiro: <br>
+          <input type ="text" ng-model="fechaRetiro"><br>
+          Fecha creacion:<br>
+          <input type ="text" ng-model="fechaCreacion"><br>
+          <button ui-sref= "rf6Response({
+                	precio : precio,
+                	unidadDePrecio : unidadDePrecio,
+                	alojamiento : alojamiento,
+                	fechaRetiro : fechaRetiro,
+                	fechaCreacion: fechaCreacion
+                })">Enviar</button>
+      </form>
+  </body>
+
+</html>

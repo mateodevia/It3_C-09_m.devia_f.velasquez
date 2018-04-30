@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+
+  </head>
+
+  <body>
+      <form>
+          Nombre:<br>
+          <input type ="text" ng-model="nombre"><br>
+          Tipo:<br>
+          <input type ="text" ng-model="tipo"><br>
+          Tipo Persona:<br>
+          <input type ="text" ng-model="tipoPersona"><br>
+          Apellido:<br>
+          <input type ="text" ng-model="apellido"><br>
+          Tipo Documento:<br>
+          <input type ="text" ng-model="tipoDocumento"><br>
+          Numero Documento:<br>
+          <input type ="text" ng-model="numDocumento"><br>
+          <button ui-sref= "rf1Response({nombre: nombre, tipo: tipo, tipoPersona: tipoPersona, apellido: apellido, tipoDocumento: tipoDocumento, numDocumento: numDocumento})">Enviar</button>
+      </form>
+
+  </body>
+
+</html>

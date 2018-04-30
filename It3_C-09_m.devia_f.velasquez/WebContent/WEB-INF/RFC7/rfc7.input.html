@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+
+  </head>
+
+  <body>
+  	Desea consultar la unidad de tiempo con mayor/menor demanda y mayores ingresos?
+    <form>
+          Unidad de tiempo (ANIO, MES, SEMANA, DIA):<br>
+          <input type ="text" ng-model="unidadTiempo"><br>
+          Tipo alojamiento:<br>
+          <input type ="text" ng-model="tipoAl"><br>
+          <button ui-sref= "rfc7Response({unidadTiempo: unidadTiempo, tipoAl: tipoAl})">Enviar</button>
+      </form>
+  </body>
+
+</html>
