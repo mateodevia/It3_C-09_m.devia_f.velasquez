@@ -19,6 +19,7 @@ insert into semanas (numero)values(17);
 insert into semanas (numero)values(18);
 insert into semanas (numero)values(19);
 insert into semanas (numero)values(20);
+insert into semanas (numero)values(21);
 insert into semanas (numero)values(22);
 insert into semanas (numero)values(23);
 insert into semanas (numero)values(24);
@@ -105,8 +106,8 @@ from (select FECHA_INICIO,
 where (uno.semana_inicio < 44 or uno.semana_inicio = 44) and (uno.semana_fin > 44 or uno.semana_fin = 44) and UNO.ID_AL_OF = 10;
 
 --cual es el  alojamiento que mas reservas tiene en la semana 49 del año 2019, no hay reservas en esta semana (cuatro) 
-select *
-from(select id, (select count(*)
+select concat(alojamiento, concat(', numero de reservas: ',reservas))aloj_reserv
+from(select concat('id: ',concat(id, concat(', capacidad: ', concat(capacidad,concat(', compartida: ', concat(compartida, concat(', tipo: ', concat(tipo, concat(', ubicacion: ', ubicacion))))))))) alojamiento, (select count(*)
         from (select FECHA_INICIO,
                     fecha_fin,
                     ID_AL_OF, 
@@ -119,12 +120,12 @@ from(select id, (select count(*)
                     extract(year from fecha_fin) = 2019 or 
                     extract(year from fecha_fin) > 2019  and (extract(year from fecha_inicio) < 2019 or extract(year from fecha_inicio) = 2019)
             )uno
-        where (uno.semana_inicio < 49 or uno.semana_inicio = 49) and (uno.semana_fin > 49 or uno.semana_fin = 49) and UNO.ID_AL_OF = id) reservas
+        where (uno.semana_inicio < 44 or uno.semana_inicio = 44) and (uno.semana_fin > 44 or uno.semana_fin = 44) and UNO.ID_AL_OF = id) reservas
 from alojamientos
 order by reservas  desc)
 where rownum = 1;
 
--- cuantas reservas hay en cada semana del 2019 en el alojamiento 10 (cinco)
+-- cuantas reservas hay en cada semana del 2019 en el alojamiento 10 (cinco) NO SIRVE PA NADA
 select numero, (select count(*) as numero_reservas
                 from (select FECHA_INICIO,
                             fecha_fin,
@@ -141,6 +142,47 @@ select numero, (select count(*) as numero_reservas
                 ) as numero_reservas
 from semanas;
 
+-- cual es el alojamiento mas ocupado en cada semana del 2017 (final)
+select numero as semana, (select concat(alojamiento, concat(', numero de reservas: ',reservas))aloj_reserv
+from(select concat('id: ',concat(id, concat(', capacidad: ', concat(capacidad,concat(', compartida: ', concat(compartida, concat(', tipo: ', concat(tipo, concat(', ubicacion: ', ubicacion))))))))) alojamiento, (select count(*)
+        from (select FECHA_INICIO,
+                    fecha_fin,
+                    ID_AL_OF, 
+                    FECHA_CREACION_OF,         
+                    case when extract(year from fecha_inicio) = 2017 then to_char(to_date(fecha_inicio), 'ww') else '0' end as semana_inicio, 
+                    case when extract(year from fecha_fin) = 2017 then to_char(to_date(fecha_fin), 'ww') else '52' end as semana_fin 
+                from reservas
+                where extract(year from fecha_inicio) = 2017 or 
+                    extract(year from fecha_inicio) < 2017  and (extract(year from fecha_fin) > 2017 or extract(year from fecha_fin) = 2017) or 
+                    extract(year from fecha_fin) = 2017 or 
+                    extract(year from fecha_fin) > 2017  and (extract(year from fecha_inicio) < 2017 or extract(year from fecha_inicio) = 2017)
+            )uno
+        where (uno.semana_inicio < numero or uno.semana_inicio = numero) and (uno.semana_fin > numero or uno.semana_fin = numero) and UNO.ID_AL_OF = id) reservas
+from alojamientos
+order by reservas  desc)
+where rownum = 1) alojamiento_mayor__ocupacion
+from semanas;
+
+-- cual es el alojamiento menos ocupado en cada semana del 2019 (final)
+select numero as semana, (select concat(alojamiento, concat(', numero de reservas: ',reservas))aloj_reserv
+from(select concat('id: ',concat(id, concat(', capacidad: ', concat(capacidad,concat(', compartida: ', concat(compartida, concat(', tipo: ', concat(tipo, concat(', ubicacion: ', ubicacion))))))))) alojamiento, (select count(*)
+        from (select FECHA_INICIO,
+                    fecha_fin,
+                    ID_AL_OF, 
+                    FECHA_CREACION_OF,         
+                    case when extract(year from fecha_inicio) = 2019 then to_char(to_date(fecha_inicio), 'ww') else '0' end as semana_inicio, 
+                    case when extract(year from fecha_fin) = 2019 then to_char(to_date(fecha_fin), 'ww') else '52' end as semana_fin 
+                from reservas
+                where extract(year from fecha_inicio) = 2019 or 
+                    extract(year from fecha_inicio) < 2019  and (extract(year from fecha_fin) > 2019 or extract(year from fecha_fin) = 2019) or 
+                    extract(year from fecha_fin) = 2019 or 
+                    extract(year from fecha_fin) > 2019  and (extract(year from fecha_inicio) < 2019 or extract(year from fecha_inicio) = 2019)
+            )uno
+        where (uno.semana_inicio < numero or uno.semana_inicio = numero) and (uno.semana_fin > numero or uno.semana_fin = numero) and UNO.ID_AL_OF = id) reservas
+from alojamientos
+order by reservas  asc)
+where rownum = 1) alojamiento_mayor__ocupacion
+from semanas;
 
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 --WORKSPACE
