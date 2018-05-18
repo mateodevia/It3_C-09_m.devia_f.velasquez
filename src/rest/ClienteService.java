@@ -144,6 +144,23 @@ public class ClienteService {
 			return Response.status(500).entity(doErrorMessage(e)).build();
 		}
 	}
+	
+	@GET
+	@Path("/clientessinreservasrango")
+	public Response darClientesSinReservaEnRango(@QueryParam("token") Integer token, @QueryParam("alojamiento") Integer alojamiento, @QueryParam("fechaCotaInferior") Date fechaCotaInferior, @QueryParam("fechaCotaSuperior") Date fechaCotaSuperior) {
+		
+		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
+		
+		try {
+			return Response.status(200).entity(tm.darClientesSinReservaEnRango(alojamiento, fechaCotaInferior, fechaCotaSuperior, token)).build();
+		}
+		catch(BusinessLogicException e) {
+			return Response.status(400).entity(doErrorMessage(e)).build();
+		}
+		catch(Exception e) {
+			return Response.status(500).entity(doErrorMessage(e)).build();
+		}
+	}
 
 	
 	@SuppressWarnings("deprecation")
