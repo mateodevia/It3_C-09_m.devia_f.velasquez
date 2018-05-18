@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import auxiliary.Fechas;
 import auxiliary.UsoCliente;
 import auxiliary.UsoTipoCliente;
 import vos.Alojamiento;
@@ -118,14 +120,17 @@ public class DAOCliente {
 	 */
 	public void addCliente(Cliente cliente) throws SQLException, Exception {
 
-		String sql = String.format("INSERT INTO %1$s.CLIENTES (CARNET_UNIANDES, NOMBRE, APELLIDO, TIPO_DOCUMENTO, NUM_DOCUMENTO, TIPO_CLIENTE) VALUES (%2$s, '%3$s', '%4$s', '%5$s', '%6$s', '%7$s')", 
+		String fecha = Fechas.pasarDateAFormatoSQL(cliente.getFechaCreacion());
+		
+		String sql = String.format("INSERT INTO %1$s.CLIENTES (CARNET_UNIANDES, NOMBRE, APELLIDO, TIPO_DOCUMENTO, NUM_DOCUMENTO, TIPO_CLIENTE, FECHA_CREACION) VALUES (%2$s, '%3$s', '%4$s', '%5$s', '%6$s', '%7$s', '%8$s')", 
 									USUARIO, 
 									cliente.getCarnetUniandes(),
 									cliente.getNombre(),
 									cliente.getApellido(),
 									cliente.getTipoDocumento(),
 									cliente.getNumDocumento(),
-									cliente.getTipoCliente());
+									cliente.getTipoCliente(),
+									fecha);
 		System.out.println(sql);
 
 		Statement st = conn.createStatement();
@@ -251,13 +256,14 @@ public class DAOCliente {
 		String tipoDoc = resultSet.getString("TIPO_DOCUMENTO");
 		long numDoc = resultSet.getLong("NUM_DOCUMENTO");
 		String tipoCliente = resultSet.getString("TIPO_CLIENTE");
+		Date fechaCreacion = resultSet.getDate("FECHA_CREACION");
 		
 		DAOReserva daoReserva = new DAOReserva();
 		daoReserva.setConn(conn);
 		ArrayList<Reserva> reservas = daoReserva.getReservasOfCliente(carnetUniandes);
 		
 		
-		Cliente cliente = new Cliente(carnetUniandes, nombre, apellido, tipoDoc, numDoc, reservas, tipoCliente);
+		Cliente cliente = new Cliente(carnetUniandes, nombre, apellido, tipoDoc, numDoc, reservas, tipoCliente, fechaCreacion);
 
 		return cliente;
 	}

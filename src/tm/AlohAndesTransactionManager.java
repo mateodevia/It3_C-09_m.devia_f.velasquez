@@ -1019,9 +1019,11 @@ public class AlohAndesTransactionManager {
 
 		try {
 			this.conn = darConexion();
-
+			
+			cliente.setFechaCreacion(new Date(System.currentTimeMillis()));
+			
 			dao.setConn(conn);
-
+			
 			conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
 			conn.setAutoCommit(false);
 			dao.addCliente(cliente);
