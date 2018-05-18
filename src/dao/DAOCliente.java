@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import auxiliary.Fechas;
+import auxiliary.RFC13;
 import auxiliary.UsoCliente;
 import auxiliary.UsoTipoCliente;
 import vos.Cliente;
@@ -353,5 +354,61 @@ public class DAOCliente {
 		
 		st.close();
 		return respuesta;	
+	}
+	
+	public List<RFC13> getBuenosClientes() throws Exception{
+		
+		List<RFC13> respuesta = new ArrayList<RFC13>();
+		
+		String sql = "SELECT * FROM (\r\n" + 
+				"    SELECT CLIENTES.*, (CASE  WHEN CARNET_UNIANDES IN ( SELECT MESES_RESERVADOS.CARNET_UNIANDES\r\n" + 
+				"                                                        FROM(   SELECT CLIENTES.CARNET_UNIANDES,TRUNC( MONTHS_BETWEEN( CURRENT_DATE,CLIENTES.FECHA_CREACION ) ) as MESES\r\n" + 
+				"                                                                FROM CLIENTES\r\n" + 
+				"                                                            ) MESES_CREACION\r\n" + 
+				"                                                        INNER JOIN\r\n" + 
+				"                                                            (   SELECT CLIENTES.CARNET_UNIANDES, COUNT(DISTINCT (EXTRACT(MONTH FROM RESERVAS.FECHA_INICIO) || '/' || EXTRACT (YEAR FROM RESERVAS.FECHA_INICIO))) AS MESES\r\n" + 
+				"                                                                FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE = CLIENTES.CARNET_UNIANDES\r\n" + 
+				"                                                                WHERE RESERVAS.FECHA_INICIO <= CURRENT_DATE \r\n" + 
+				"                                                                GROUP BY CLIENTES.CARNET_UNIANDES\r\n" + 
+				"                                                            ) MESES_RESERVADOS\r\n" + 
+				"                                                        ON MESES_RESERVADOS.CARNET_UNIANDES = MESES_CREACION.CARNET_UNIANDES\r\n" + 
+				"                                                        WHERE MESES_CREACION.MESES = MESES_RESERVADOS.MESES\r\n" + 
+				"                                                      ) THEN 0\r\n" + 
+				"                \r\n" + 
+				"                              WHEN CARNET_UNIANDES IN (    SELECT CLIENTES.CARNET_UNIANDES \r\n" + 
+				"                                                           FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE = CLIENTES.CARNET_UNIANDES INNER JOIN OFERTAS_ALOJAMIENTOS ON OFERTAS_ALOJAMIENTOS.ID_AL = RESERVAS.ID_AL_OF\r\n" + 
+				"                                                           GROUP BY CLIENTES.CARNET_UNIANDES\r\n" + 
+				"\r\n" + 
+				"                                                           MINUS\r\n" + 
+				"\r\n" + 
+				"                                                           SELECT CLIENTES.CARNET_UNIANDES\r\n" + 
+				"                                                           FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE = CLIENTES.CARNET_UNIANDES INNER JOIN OFERTAS_ALOJAMIENTOS ON OFERTAS_ALOJAMIENTOS.ID_AL = RESERVAS.ID_AL_OF\r\n" + 
+				"                                                           WHERE OFERTAS_ALOJAMIENTOS.PRECIO > 433000\r\n" + 
+				"                \r\n" + 
+				"                                                      ) THEN 1\r\n" + 
+				"                                                      \r\n" + 
+				"                              WHEN CARNET_UNIANDES IN (   SELECT CLIENTES.CARNET_UNIANDES \r\n" + 
+				"                                                          FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE = CLIENTES.CARNET_UNIANDES INNER JOIN HABS_HOTELES ON HABS_HOTELES.ID_AL = RESERVAS.ID_AL_OF\r\n" + 
+				"                                                          GROUP BY CLIENTES.CARNET_UNIANDES\r\n" + 
+				"\r\n" + 
+				"                                                          MINUS\r\n" + 
+				"\r\n" + 
+				"                                                          SELECT CLIENTES.CARNET_UNIANDES\r\n" + 
+				"                                                          FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE = CLIENTES.CARNET_UNIANDES INNER JOIN HABS_HOTELES ON HABS_HOTELES.ID_AL = RESERVAS.ID_AL_OF\r\n" + 
+				"                                                          WHERE TIPO = 'SEMISUITE' OR TIPO = 'ESTANDAR'\r\n" + 
+				"                                                      ) THEN 2\r\n" + 
+				"                        END) AS JUSTIFICACION\r\n" + 
+				"    FROM CLIENTES)\r\n" + 
+				"WHERE JUSTIFICACION IS NOT NULL";
+		
+		Statement st = conn.createStatement();
+		ResultSet rs = st.executeQuery( sql );
+		
+		while(rs.next()) {
+			respuesta.add(new RFC13(convertResultSetToCliente(rs), rs.getInt("JUSTIFICACION")));
+		}
+		
+		st.close();
+		return respuesta;
 	}
 }

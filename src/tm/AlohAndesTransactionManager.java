@@ -12,6 +12,7 @@ import java.util.Properties;
 
 import auxiliary.Log;
 import auxiliary.RFC1;
+import auxiliary.RFC13;
 import auxiliary.RFC3;
 import auxiliary.UsoCliente;
 import auxiliary.UsoTipoCliente;
@@ -63,6 +64,8 @@ import vos.ViviendaUniversitaria;
 
 public class AlohAndesTransactionManager {
 
+	private static final int TOKEN_ADMIN = -1;
+	
 	// -----------------------------------------------------
 	// CONSTANTES
 	// -----------------------------------------------------
@@ -2383,5 +2386,73 @@ public class AlohAndesTransactionManager {
 		return resp;
 		
 	}
+	
+	//-----------------------------------------------------------------
+	//RFC10
+	//-----------------------------------------------------------------
+	
+	public List<Cliente> darClientesConReservaEnRango(Integer idAloj, Date cotaInferior, Date cotaSuperior, Integer token){
+		return null;
+	}
+
+	//-----------------------------------------------------------------
+	//RFC11
+	//-----------------------------------------------------------------
+		
+	public List<Cliente> darClientesSinReservaEnRango(Integer idAloj, Date cotaInferior, Date cotaSuperior, Integer token){
+		return null;
+	}
+
+	//-----------------------------------------------------------------
+	//RFC12
+	//-----------------------------------------------------------------
+	
+	
+	
+	//-----------------------------------------------------------------
+	//RFC13
+	//-----------------------------------------------------------------
+	
+	public List<RFC13> darBuenosClientes(Integer token) throws Exception{
+		
+		if(token != TOKEN_ADMIN) {
+			throw new BusinessLogicException("Únicamente el administrador puede realizar esta consulta");
+		}
+		
+		DAOCliente dao = new DAOCliente();
+		List<RFC13> resp = new ArrayList<RFC13>();
+		
+		try {
+			this.conn = darConexion();
+
+			dao.setConn(conn);
+			
+			resp = dao.getBuenosClientes();
+			
+		} catch (SQLException sqlException) {
+			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
+			sqlException.printStackTrace();
+			throw sqlException;
+		} catch (Exception exception) {
+			System.err.println("[EXCEPTION] General Exception:" + exception.getMessage());
+			exception.printStackTrace();
+			throw exception;
+		} finally {
+			try {
+				dao.cerrarRecursos();
+				if (this.conn != null) {
+					this.conn.close();
+				}
+			} catch (SQLException exception) {
+				System.err.println("[EXCEPTION] SQLException While Closing Resources:" + exception.getMessage());
+				exception.printStackTrace();
+				throw exception;
+			}
+		}
+		
+		return resp;
+
+	}
+	
 	
 }

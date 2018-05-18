@@ -109,6 +109,19 @@ public class ClienteService {
 			return Response.status(500).entity(doErrorMessage(e)).build();
 		}
 	}
+	
+	@GET
+	@Path("/buenosclientes")
+	public Response getBuenosClientes(@QueryParam("token") Integer token) {
+		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
+		
+		try {
+			return Response.status(200).entity(tm.darBuenosClientes(token)).build();
+		}
+		catch(Exception e) {
+			return Response.status(500).entity(doErrorMessage(e)).build();
+		}
+	}
 
 	
 	@SuppressWarnings("deprecation")
