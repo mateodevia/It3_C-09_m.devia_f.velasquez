@@ -2393,7 +2393,7 @@ public class AlohAndesTransactionManager {
 	
 	public List<Cliente> darClientesConReservaEnRango(Integer idAloj, Date cotaInferior, Date cotaSuperior, Integer token) throws Exception{
 		
-		if(token != TOKEN_ADMIN || token != idAloj) {
+		if(token != TOKEN_ADMIN && token != idAloj) {
 			throw new BusinessLogicException("No tiene permisos para realizar esta acción");
 		}
 		

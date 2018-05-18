@@ -1,5 +1,7 @@
 package rest;
 
+import java.sql.Date;
+
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -117,6 +119,23 @@ public class ClienteService {
 		
 		try {
 			return Response.status(200).entity(tm.darBuenosClientes(token)).build();
+		}
+		catch(BusinessLogicException e) {
+			return Response.status(400).entity(doErrorMessage(e)).build();
+		}
+		catch(Exception e) {
+			return Response.status(500).entity(doErrorMessage(e)).build();
+		}
+	}
+	
+	@GET
+	@Path("/clientesreservasrango")
+	public Response darClientesConReservaEnRango(@QueryParam("token") Integer token, @QueryParam("alojamiento") Integer alojamiento, @QueryParam("fechaCotaInferior") Date fechaCotaInferior, @QueryParam("fechaCotaSuperior") Date fechaCotaSuperior) {
+		
+		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
+		
+		try {
+			return Response.status(200).entity(tm.darClientesConReservaEnRango(alojamiento, fechaCotaInferior, fechaCotaSuperior, token)).build();
 		}
 		catch(BusinessLogicException e) {
 			return Response.status(400).entity(doErrorMessage(e)).build();

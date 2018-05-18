@@ -423,6 +423,9 @@ public class DAOCliente {
 		
 		//TODO, faltan opciones de agrupamiento y eso
 		
+		
+		System.out.println("[SENTENCIA] " + sql);
+		
 		List<Cliente> resp = new ArrayList<Cliente>();
 		
 		Statement st = conn.createStatement();
