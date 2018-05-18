@@ -1,10 +1,14 @@
---todos los clientes en alohandes
-select carnet_uniandes
-from clientes
+SELECT CLIENTES.*
+FROM(
+    --todos los clientes en alohandes
+    SELECT carnet_uniandes
+    FROM clientes
 
-minus
+    MINUS
 
---todos los cliente que hicieron reservas en esa oferta en el rango de fechas
-select id_cliente
-from RESERVAS
-where ID_AL_OF = 10 and FECHA_CREACION_OF = '01/01/14' and ('01/01/16' < FECHA_INICIO or '01/01/16' = FECHA_INICIO) and (FECHA_FIN < '01/01/19' or FECHA_FIN = '01/01/19');
+    --todos los cliente que hicieron reservas en esa oferta en el rango de fechas
+    SELECT id_cliente
+    FROM RESERVAS
+    WHERE ID_AL_OF = 10 AND FECHA_CREACION_OF = '01/01/14' AND '01/01/16' <= FECHA_INICIO 
+    AND FECHA_FIN <= '01/01/19' 
+)T INNER JOIN CLIENTES ON T.CARNET_UNIANDES = CLIENTES.CARNET_UNIANDES;
