@@ -133,13 +133,46 @@ select numero, (select count(*) as numero_reservas
                             case when extract(year from fecha_inicio) = 2019 then to_char(to_date(fecha_inicio), 'ww') else '0' end as semana_inicio, 
                             case when extract(year from fecha_fin) = 2019 then to_char(to_date(fecha_fin), 'ww') else '52' end as semana_fin 
                         from reservas
-                        where extract(year from fecha_inicio) = 2019 or 
-                            extract(year from fecha_inicio) < 2019  and (extract(year from fecha_fin) > 2019 or extract(year from fecha_fin) = 2019) or 
-                            extract(year from fecha_fin) = 2019 or 
-                            extract(year from fecha_fin) > 2019  and (extract(year from fecha_inicio) < 2019 or extract(year from fecha_inicio) = 2019)
+                        where
+                            extract(year from fecha_inicio) <= 2019  and (extract(year from fecha_fin) >= 2019) or  
+                            extract(year from fecha_fin) >= 2019  and (extract(year from fecha_inicio) <= 2019)
                     )uno
                 where (uno.semana_inicio < numero or uno.semana_inicio = numero) and (uno.semana_fin > numero or uno.semana_fin = numero) and UNO.ID_AL_OF = 10
                 ) as numero_reservas
 from semanas;
 
 
+--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+--WORKSPACE
+--//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+SELECT ALOJAMIENTOS.*, numero
+FROM ALOJAMIENTOS 
+INNER JOIN (
+select numero, (select count(*) as numero_reservas
+                from (select FECHA_INICIO,
+                            fecha_fin,
+                            ID_AL_OF, 
+                            FECHA_CREACION_OF,         
+                            case when extract(year from fecha_inicio) = 2019 then to_char(to_date(fecha_inicio), 'ww') else '0' end as semana_inicio, 
+                            case when extract(year from fecha_fin) = 2019 then to_char(to_date(fecha_fin), 'ww') else '52' end as semana_fin 
+                        from reservas
+                        where
+                            extract(year from fecha_inicio) <= 2019  and (extract(year from fecha_fin) >= 2019) or  
+                            extract(year from fecha_fin) >= 2019  and (extract(year from fecha_inicio) <= 2019)
+                    )uno
+                where (uno.semana_inicio < numero or uno.semana_inicio = numero) and (uno.semana_fin > numero or uno.semana_fin = numero)
+                ) as numero_reservas
+from semanas);
+
+
+select FECHA_INICIO,
+                            fecha_fin,
+                            ID_AL_OF, 
+                            FECHA_CREACION_OF,         
+                            case when extract(year from fecha_inicio) = 2019 then to_char(to_date(fecha_inicio), 'ww') else '0' end as semana_inicio, 
+                            case when extract(year from fecha_fin) = 2019 then to_char(to_date(fecha_fin), 'ww') else '52' end as semana_fin 
+                        from reservas
+                        where
+                            extract(year from fecha_inicio) <= 2019  and (extract(year from fecha_fin) >= 2019) or  
+                            extract(year from fecha_fin) >= 2019  and (extract(year from fecha_inicio) <= 2019);

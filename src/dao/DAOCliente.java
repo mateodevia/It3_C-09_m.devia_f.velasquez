@@ -412,7 +412,7 @@ public class DAOCliente {
 		return respuesta;
 	}
 	
-	public List<Cliente> getClientesConReservaEnRango(Integer alojamiento, Date cotaInferior, Date cotaSuperior) throws Exception{
+	public List<Cliente> getClientesConReservaEnRango(Integer alojamiento, Date cotaInferior, Date cotaSuperior, String agrupamiento, String ordenamiento) throws Exception{
 		
 		String sql = String.format("SELECT *\r\n" + 
 				"FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE =  CLIENTES.CARNET_UNIANDES \r\n" + 

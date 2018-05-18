@@ -2391,7 +2391,19 @@ public class AlohAndesTransactionManager {
 	//RFC10
 	//-----------------------------------------------------------------
 	
-	public List<Cliente> darClientesConReservaEnRango(Integer idAloj, Date cotaInferior, Date cotaSuperior, Integer token) throws Exception{
+	private boolean determinarValidezAgrupamientoOrdenamiento(Integer agrupamiento, Integer ordenamiento) {
+		
+		if(agrupamiento != null) {
+			
+		}
+		if(ordenamiento != null) {
+			
+		}
+		
+		return false;
+	}
+	
+	public List<Cliente> darClientesConReservaEnRango(Integer idAloj, Date cotaInferior, Date cotaSuperior, Integer token, Integer agrupamiento, Integer ordenamiento) throws Exception{
 		
 		if(token != TOKEN_ADMIN && token != idAloj) {
 			throw new BusinessLogicException("No tiene permisos para realizar esta acción");
@@ -2405,7 +2417,9 @@ public class AlohAndesTransactionManager {
 
 			dao.setConn(conn);
 			
-			resp = dao.getClientesConReservaEnRango(idAloj, cotaInferior, cotaSuperior);
+			if(!determinarValidezAgrupamientoOrdenamiento(0,0))
+			
+			resp = dao.getClientesConReservaEnRango(idAloj, cotaInferior, cotaSuperior,"", "");
 		} catch (SQLException sqlException) {
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
