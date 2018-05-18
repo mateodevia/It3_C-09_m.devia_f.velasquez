@@ -411,4 +411,31 @@ public class DAOCliente {
 		st.close();
 		return respuesta;
 	}
+	
+	public List<Cliente> getClientesConReservaEnRango(Integer alojamiento, Date cotaInferior, Date cotaSuperior) throws Exception{
+		
+		String sql = String.format("SELECT *\r\n" + 
+				"FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE =  CLIENTES.CARNET_UNIANDES \r\n" + 
+				"WHERE RESERVAS.ID_AL_OF = %1$s AND '%2$s' <= RESERVAS.FECHA_INICIO AND RESERVAS.FECHA_FIN <= '%3$s'"
+				, alojamiento
+				, Fechas.pasarDateAFormatoSQL(cotaInferior)
+				, Fechas.pasarDateAFormatoSQL(cotaSuperior));
+		
+		//TODO, faltan opciones de agrupamiento y eso
+		
+		List<Cliente> resp = new ArrayList<Cliente>();
+		
+		Statement st = conn.createStatement();
+		ResultSet rs = st.executeQuery(sql);
+		
+		while(rs.next()) {
+			resp.add(convertResultSetToCliente(rs));
+		}
+		
+		return resp;
+	}
+	
+	public List<Cliente> getClientesSinReservaEnRango(Integer alojamiento, Date cotaInferior, Date cotaSuperior){
+		return null;
+	}
 }

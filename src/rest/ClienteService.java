@@ -118,6 +118,9 @@ public class ClienteService {
 		try {
 			return Response.status(200).entity(tm.darBuenosClientes(token)).build();
 		}
+		catch(BusinessLogicException e) {
+			return Response.status(400).entity(doErrorMessage(e)).build();
+		}
 		catch(Exception e) {
 			return Response.status(500).entity(doErrorMessage(e)).build();
 		}

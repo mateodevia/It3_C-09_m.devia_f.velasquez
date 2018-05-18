@@ -2391,17 +2391,82 @@ public class AlohAndesTransactionManager {
 	//RFC10
 	//-----------------------------------------------------------------
 	
-	public List<Cliente> darClientesConReservaEnRango(Integer idAloj, Date cotaInferior, Date cotaSuperior, Integer token){
-		return null;
+	public List<Cliente> darClientesConReservaEnRango(Integer idAloj, Date cotaInferior, Date cotaSuperior, Integer token) throws Exception{
+		
+		if(token != TOKEN_ADMIN || token != idAloj) {
+			throw new BusinessLogicException("No tiene permisos para realizar esta acción");
+		}
+		
+		DAOCliente dao = new DAOCliente();
+		
+		List<Cliente> resp = new ArrayList<Cliente>();
+		try {
+			this.conn = darConexion();
+
+			dao.setConn(conn);
+			
+			resp = dao.getClientesConReservaEnRango(idAloj, cotaInferior, cotaSuperior);
+		} catch (SQLException sqlException) {
+			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
+			sqlException.printStackTrace();
+			throw sqlException;
+		} catch (Exception exception) {
+			System.err.println("[EXCEPTION] General Exception:" + exception.getMessage());
+			exception.printStackTrace();
+			throw exception;
+		} finally {
+			try {
+				dao.cerrarRecursos();
+				if (this.conn != null) {
+					this.conn.close();
+				}
+			} catch (SQLException exception) {
+				System.err.println("[EXCEPTION] SQLException While Closing Resources:" + exception.getMessage());
+				exception.printStackTrace();
+				throw exception;
+			}
+		}
+		return resp;
 	}
 
 	//-----------------------------------------------------------------
 	//RFC11
 	//-----------------------------------------------------------------
 		
-	public List<Cliente> darClientesSinReservaEnRango(Integer idAloj, Date cotaInferior, Date cotaSuperior, Integer token){
-		return null;
-	}
+	/*public List<Cliente> darClientesSinReservaEnRango(Integer idAloj, Date cotaInferior, Date cotaSuperior, Integer token){
+		
+		if(token != TOKEN_ADMIN || token != idAloj) {
+			throw new BusinessLogicException("No tiene permisos para realizar esta acción");
+		}
+		
+		try {
+			this.conn = darConexion();
+
+			dao.setConn(conn);
+			
+			//reeeeeeeeeeeeeeeeeeeeeeeeeeeee
+		} catch (SQLException sqlException) {
+			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
+			sqlException.printStackTrace();
+			throw sqlException;
+		} catch (Exception exception) {
+			System.err.println("[EXCEPTION] General Exception:" + exception.getMessage());
+			exception.printStackTrace();
+			throw exception;
+		} finally {
+			try {
+				dao.cerrarRecursos();
+				if (this.conn != null) {
+					this.conn.close();
+				}
+			} catch (SQLException exception) {
+				System.err.println("[EXCEPTION] SQLException While Closing Resources:" + exception.getMessage());
+				exception.printStackTrace();
+				throw exception;
+			}
+		}
+		return resp;
+	}*/
 
 	//-----------------------------------------------------------------
 	//RFC12
