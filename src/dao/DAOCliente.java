@@ -12,12 +12,8 @@ import java.util.List;
 import auxiliary.Fechas;
 import auxiliary.UsoCliente;
 import auxiliary.UsoTipoCliente;
-import vos.Alojamiento;
 import vos.Cliente;
-import vos.OfertaAlojamiento;
-import vos.Operador;
 import vos.Reserva;
-import vos.Servicio;
 
 public class DAOCliente {
 	//----------------------------------------------------------------------------------------------
