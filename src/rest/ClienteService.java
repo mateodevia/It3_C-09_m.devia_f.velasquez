@@ -54,6 +54,8 @@ public class ClienteService {
 	public Response postCliente(Cliente c) {
 		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
 		
+		corregirDesfase(c);
+		
 		try {
 			tm.registrarCliente(c);
 			return Response.status(200).entity(c).build();
@@ -106,6 +108,14 @@ public class ClienteService {
 		catch(Exception e) {
 			return Response.status(500).entity(doErrorMessage(e)).build();
 		}
+	}
+
+	
+	@SuppressWarnings("deprecation")
+	private void corregirDesfase(Cliente cliente) {
+		
+		cliente.getFechaCreacion().setDate(cliente.getFechaCreacion().getDate()+1);
+		
 	}
 	
 }

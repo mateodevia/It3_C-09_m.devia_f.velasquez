@@ -1,5 +1,6 @@
 package vos;
 
+import java.sql.Date;
 import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -53,13 +54,17 @@ public class Cliente {
 	
 	@JsonProperty(value = "tipoCliente")
 	private String tipoCliente;
+	
+	@JsonProperty(value = "fechaCreacion")
+	private Date fechaCreacion;
     
     //------------------------------------------------------------------------------------------
     // Constructor
     //------------------------------------------------------------------------------------------
     
 	public Cliente(@JsonProperty(value="carnetUniandes")Long carnetUniandes, @JsonProperty(value="nombre")String nombre, @JsonProperty(value="apellido")String apellido, @JsonProperty(value="tipoDocumento")String tipoDocumento, @JsonProperty(value="numDocumento")Long numDocumento,
-			@JsonProperty(value="reservas")List<Reserva> reservas, @JsonProperty(value = "tipoCliente")String tipoCliente) {
+			@JsonProperty(value="reservas")List<Reserva> reservas, @JsonProperty(value = "tipoCliente")String tipoCliente,
+			@JsonProperty(value="fechaCreacion") Date fechaCreacion) {
 		
 		super();
 		this.carnetUniandes = carnetUniandes;
@@ -69,6 +74,7 @@ public class Cliente {
 		this.numDocumento = numDocumento;
 		this.reservas = reservas;
 		this.tipoCliente = tipoCliente;
+		this.fechaCreacion = fechaCreacion;
 	}
 	
     //------------------------------------------------------------------------------------------
@@ -171,6 +177,14 @@ public class Cliente {
 
 	public void setTipoCliente(String tipoCliente) {
 		this.tipoCliente = tipoCliente;
+	}
+	
+	public Date getFechaCreacion() {
+		return fechaCreacion;
+	}
+
+	public void setFechaCreacion(Date fechaCreacion) {
+		this.fechaCreacion = fechaCreacion;
 	}
 
 	/**
