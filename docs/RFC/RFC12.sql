@@ -185,3 +185,195 @@ order by reservas  asc)
 where rownum = 1) alojamiento_mayor__ocupacion
 from semanas;
 
+--cuales son las reservas de la semana 44(seis)
+select *
+from (select FECHA_INICIO,
+        fecha_fin,
+        ID_AL_OF, 
+        FECHA_CREACION_OF,         
+        case when extract(year from fecha_inicio) = 2019 then to_char(to_date(fecha_inicio), 'ww') else '0' end as semana_inicio, 
+        case when extract(year from fecha_fin) = 2019 then to_char(to_date(fecha_fin), 'ww') else '52' end as semana_fin 
+    from reservas
+    where extract(year from fecha_inicio) = 2019 or 
+        extract(year from fecha_inicio) < 2019  and (extract(year from fecha_fin) > 2019 or extract(year from fecha_fin) = 2019) or 
+        extract(year from fecha_fin) = 2019 or 
+        extract(year from fecha_fin) > 2019  and (extract(year from fecha_inicio) < 2019 or extract(year from fecha_inicio) = 2019)
+    )uno
+where (uno.semana_inicio < 44 or uno.semana_inicio = 44) and (uno.semana_fin > 44 or uno.semana_fin = 44);
+
+--cuales son los operadores que tienen reservas en la semana 44(siete)
+select alojamientos.id_op
+from alojamientos
+    inner join
+    (select *
+    from (select FECHA_INICIO,
+                fecha_fin,
+                ID_AL_OF, 
+                FECHA_CREACION_OF,         
+                case when extract(year from fecha_inicio) = 2019 then to_char(to_date(fecha_inicio), 'ww') else '0' end as semana_inicio, 
+                case when extract(year from fecha_fin) = 2019 then to_char(to_date(fecha_fin), 'ww') else '52' end as semana_fin 
+        from reservas
+        where extract(year from fecha_inicio) = 2019 or 
+            extract(year from fecha_inicio) < 2019  and (extract(year from fecha_fin) > 2019 or extract(year from fecha_fin) = 2019) or 
+            extract(year from fecha_fin) = 2019 or 
+            extract(year from fecha_fin) > 2019  and (extract(year from fecha_inicio) < 2019 or extract(year from fecha_inicio) = 2019)
+        )uno
+    where (uno.semana_inicio < 44 or uno.semana_inicio = 44) and (uno.semana_fin > 44 or uno.semana_fin = 44)
+    
+    ) seis
+    on alojamientos.id = seis.id_al_of;
+
+
+--cuantas reservas tienen los operadores que tienen reservas en la semana 44(ocho)
+select alojamientos.id_op, count(*) as num_reservas
+from alojamientos
+    inner join
+    (select *
+    from (select FECHA_INICIO,
+                fecha_fin,
+                ID_AL_OF, 
+                FECHA_CREACION_OF,         
+                case when extract(year from fecha_inicio) = 2019 then to_char(to_date(fecha_inicio), 'ww') else '0' end as semana_inicio, 
+                case when extract(year from fecha_fin) = 2019 then to_char(to_date(fecha_fin), 'ww') else '52' end as semana_fin 
+        from reservas
+        where extract(year from fecha_inicio) = 2019 or 
+            extract(year from fecha_inicio) < 2019  and (extract(year from fecha_fin) > 2019 or extract(year from fecha_fin) = 2019) or 
+            extract(year from fecha_fin) = 2019 or 
+            extract(year from fecha_fin) > 2019  and (extract(year from fecha_inicio) < 2019 or extract(year from fecha_inicio) = 2019)
+        )uno
+    where (uno.semana_inicio < 44 or uno.semana_inicio = 44) and (uno.semana_fin > 44 or uno.semana_fin = 44)
+    
+    ) siete
+    on alojamientos.id = siete.id_al_of
+group by(id_op);
+
+
+--cuantas reservas tienen los operadores de la semana 44(nueve)
+select 'id:'||operadores.id||', nombre: '||operadores.nombre||', tipo: '||operadores.tipo||', numero de reservas: ' as operadores, case when ocho.num_reservas is not null then ocho.num_reservas else 0 end as num_reservas
+from operadores
+    left outer join
+    (select alojamientos.id_op, count(*) as num_reservas
+    from alojamientos
+    inner join
+    (select *
+    from (select FECHA_INICIO,
+                fecha_fin,
+                ID_AL_OF, 
+                FECHA_CREACION_OF,         
+                case when extract(year from fecha_inicio) = 2019 then to_char(to_date(fecha_inicio), 'ww') else '0' end as semana_inicio, 
+                case when extract(year from fecha_fin) = 2019 then to_char(to_date(fecha_fin), 'ww') else '52' end as semana_fin 
+        from reservas
+        where extract(year from fecha_inicio) = 2019 or 
+            extract(year from fecha_inicio) < 2019  and (extract(year from fecha_fin) > 2019 or extract(year from fecha_fin) = 2019) or 
+            extract(year from fecha_fin) = 2019 or 
+            extract(year from fecha_fin) > 2019  and (extract(year from fecha_inicio) < 2019 or extract(year from fecha_inicio) = 2019)
+        )uno
+    where (uno.semana_inicio < 44 or uno.semana_inicio = 44) and (uno.semana_fin > 44 or uno.semana_fin = 44)
+    
+    ) siete
+    on alojamientos.id = siete.id_al_of
+    group by(id_op)
+    ) ocho
+    on
+    operadores.id = ocho.id_op;
+
+
+--cual es el operador con mas reservas en la semana 44
+select operadores
+from (
+    select 'id:'||operadores.id||', nombre: '||operadores.nombre||', tipo: '||operadores.tipo||', numero de reservas: '||case when ocho.num_reservas is not null then ocho.num_reservas else 0 end as operadores, case when ocho.num_reservas is not null then ocho.num_reservas else 0 end as num_reservas
+from operadores
+    left outer join
+    (select alojamientos.id_op, count(*) as num_reservas
+    from alojamientos
+    inner join
+    (select *
+    from (select FECHA_INICIO,
+                fecha_fin,
+                ID_AL_OF, 
+                FECHA_CREACION_OF,         
+                case when extract(year from fecha_inicio) = 2019 then to_char(to_date(fecha_inicio), 'ww') else '0' end as semana_inicio, 
+                case when extract(year from fecha_fin) = 2019 then to_char(to_date(fecha_fin), 'ww') else '52' end as semana_fin 
+        from reservas
+        where extract(year from fecha_inicio) = 2019 or 
+            extract(year from fecha_inicio) < 2019  and (extract(year from fecha_fin) > 2019 or extract(year from fecha_fin) = 2019) or 
+            extract(year from fecha_fin) = 2019 or 
+            extract(year from fecha_fin) > 2019  and (extract(year from fecha_inicio) < 2019 or extract(year from fecha_inicio) = 2019)
+        )uno
+    where (uno.semana_inicio < 44 or uno.semana_inicio = 44) and (uno.semana_fin > 44 or uno.semana_fin = 44)
+    
+    ) siete
+    on alojamientos.id = siete.id_al_of
+    group by(id_op)
+    ) ocho
+    on
+    operadores.id = ocho.id_op
+    order by num_reservas desc)
+where rownum = 1;
+
+-- cual es el operador con menos reservas por cada semana
+select numero as semana, (select operadores
+from (
+    select 'id:'||operadores.id||', nombre: '||operadores.nombre||', tipo: '||operadores.tipo||', numero de reservas: '||case when ocho.num_reservas is not null then ocho.num_reservas else 0 end as operadores, case when ocho.num_reservas is not null then ocho.num_reservas else 0 end as num_reservas
+    from operadores
+        left outer join
+        (select alojamientos.id_op, count(*) as num_reservas
+        from alojamientos
+            inner join
+            (select *
+            from (select FECHA_INICIO,
+                        fecha_fin,
+                        ID_AL_OF, 
+                        FECHA_CREACION_OF,         
+                        case when extract(year from fecha_inicio) = 2019 then to_char(to_date(fecha_inicio), 'ww') else '0' end as semana_inicio, 
+                        case when extract(year from fecha_fin) = 2019 then to_char(to_date(fecha_fin), 'ww') else '52' end as semana_fin 
+                from reservas
+                where extract(year from fecha_inicio) = 2019 or 
+                    extract(year from fecha_inicio) < 2019  and (extract(year from fecha_fin) > 2019 or extract(year from fecha_fin) = 2019) or 
+                    extract(year from fecha_fin) = 2019 or 
+                    extract(year from fecha_fin) > 2019  and (extract(year from fecha_inicio) < 2019 or extract(year from fecha_inicio) = 2019)
+                )uno
+            where (uno.semana_inicio < numero or uno.semana_inicio = numero) and (uno.semana_fin > numero or uno.semana_fin = numero) 
+            ) siete
+            on alojamientos.id = siete.id_al_of
+            group by(id_op)
+    ) ocho
+    on
+    operadores.id = ocho.id_op
+    order by num_reservas desc)
+    where rownum = 1) as operadores 
+from semanas;
+
+-- cual es el operador con mas reservas por cada semana
+select numero as semana, (select operadores
+from (
+    select 'id:'||operadores.id||', nombre: '||operadores.nombre||', tipo: '||operadores.tipo||', numero de reservas: '||case when ocho.num_reservas is not null then ocho.num_reservas else 0 end as operadores, case when ocho.num_reservas is not null then ocho.num_reservas else 0 end as num_reservas
+    from operadores
+        left outer join
+        (select alojamientos.id_op, count(*) as num_reservas
+        from alojamientos
+            inner join
+            (select *
+            from (select FECHA_INICIO,
+                        fecha_fin,
+                        ID_AL_OF, 
+                        FECHA_CREACION_OF,         
+                        case when extract(year from fecha_inicio) = 2019 then to_char(to_date(fecha_inicio), 'ww') else '0' end as semana_inicio, 
+                        case when extract(year from fecha_fin) = 2019 then to_char(to_date(fecha_fin), 'ww') else '52' end as semana_fin 
+                from reservas
+                where extract(year from fecha_inicio) = 2019 or 
+                    extract(year from fecha_inicio) < 2019  and (extract(year from fecha_fin) > 2019 or extract(year from fecha_fin) = 2019) or 
+                    extract(year from fecha_fin) = 2019 or 
+                    extract(year from fecha_fin) > 2019  and (extract(year from fecha_inicio) < 2019 or extract(year from fecha_inicio) = 2019)
+                )uno
+            where (uno.semana_inicio < numero or uno.semana_inicio = numero) and (uno.semana_fin > numero or uno.semana_fin = numero) 
+            ) siete
+            on alojamientos.id = siete.id_al_of
+            group by(id_op)
+    ) ocho
+    on
+    operadores.id = ocho.id_op
+    order by num_reservas asc)
+    where rownum = 1) as operadores 
+from semanas;
+
