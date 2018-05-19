@@ -90,7 +90,7 @@
 				"header": [],
 				"body": {},
 				"url": {
-					"raw": "http://localhost:8080/It3_C-09_m.devia_f.velasquez/rest/clientes/clientessinreservasrango?token=-1&alojamiento=10&fechaCotaInferior=2002-1-1&fechaCotaSuperior=2040-1-1",
+					"raw": "http://localhost:8080/It3_C-09_m.devia_f.velasquez/rest/clientes/clientessinreservasrango?token=-1&alojamiento=10&fechaCotaInferior=2002-1-1&fechaCotaSuperior=2040-1-1&ordenamiento=0&agrupamiento=4",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -118,6 +118,14 @@
 						{
 							"key": "fechaCotaSuperior",
 							"value": "2040-1-1"
+						},
+						{
+							"key": "ordenamiento",
+							"value": "0"
+						},
+						{
+							"key": "agrupamiento",
+							"value": "4"
 						}
 					]
 				}

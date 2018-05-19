@@ -2400,9 +2400,9 @@ public class AlohAndesTransactionManager {
 			return false;
 		
 		//Revisar tamaños
-		if(agrupamiento != null && agrupamiento > TipoAgrupamiento.TIPOS_AGRUPAMIENTOS.length)
+		if(agrupamiento != null && agrupamiento > TipoAgrupamiento.TIPOS_AGRUPAMIENTOS.length-1)
 			return false;
-		if(ordenamiento != null && ordenamiento > TipoOrdenamiento.TIPOS_AGRUPADO.length && ordenamiento > TipoOrdenamiento.TIPOS_DESAGRUPADO.length)
+		if(ordenamiento != null && ordenamiento > TipoOrdenamiento.TIPOS_AGRUPADO.length && ordenamiento > TipoOrdenamiento.TIPOS_DESAGRUPADO.length-1)
 			return false;
 		
 		if(agrupamiento != null && ordenamiento != null && ordenamiento > TipoOrdenamiento.TIPOS_AGRUPADO.length)
@@ -2523,7 +2523,7 @@ public class AlohAndesTransactionManager {
 	//RFC11
 	//-----------------------------------------------------------------
 		
-	public List<Cliente> darClientesSinReservaEnRango(Integer idAloj, Date cotaInferior, Date cotaSuperior, Integer token) throws Exception{
+	public List<Cliente> darClientesSinReservaEnRango(Integer idAloj, Date cotaInferior, Date cotaSuperior, Integer token, Integer ordenamiento) throws Exception{
 		
 		if(token != TOKEN_ADMIN && token != idAloj) {
 			throw new BusinessLogicException("No tiene permisos para realizar esta acción");
@@ -2537,7 +2537,12 @@ public class AlohAndesTransactionManager {
 
 			dao.setConn(conn);
 			
-			resp = dao.getClientesSinReservaEnRango(idAloj, cotaInferior, cotaSuperior);
+			if(!determinarValidezAgrupamientoOrdenamiento(null, ordenamiento)) {
+				throw new BusinessLogicException("La combinación ordenamiento / agrupamiento no es válida");
+			}
+			
+			resp = dao.getClientesSinReservaEnRango(idAloj, cotaInferior, cotaSuperior, determinarOrdenamiento(ordenamiento, false));
+			
 		} catch (SQLException sqlException) {
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
@@ -2560,6 +2565,49 @@ public class AlohAndesTransactionManager {
 		}
 		return resp;
 	}
+	
+	public List<RFC10> darClientesSinReservaEnRangoAgrupado(Integer idAloj, Date cotaInferior, Date cotaSuperior, Integer token, Integer agrupamiento, Integer ordenamiento) throws Exception{
+		
+		if(token != TOKEN_ADMIN && token != idAloj) {
+			throw new BusinessLogicException("No tiene permisos para realizar esta acción");
+		}
+		
+		DAOCliente dao = new DAOCliente();
+		
+		List<RFC10> resp = new ArrayList<RFC10>();
+		try {
+			this.conn = darConexion();
+
+			dao.setConn(conn);
+			
+			if(!determinarValidezAgrupamientoOrdenamiento(agrupamiento, ordenamiento))
+				throw new BusinessLogicException("La combinación agrupamiento/ordenamiento usada, no es válida");
+			
+			resp = dao.getClientesSinReservaEnRangoAgrupando(idAloj, cotaInferior, cotaSuperior, determinarAgrupamiento(agrupamiento), determinarOrdenamiento(ordenamiento, true));
+		
+		} catch (SQLException sqlException) {
+			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
+			sqlException.printStackTrace();
+			throw sqlException;
+		} catch (Exception exception) {
+			System.err.println("[EXCEPTION] General Exception:" + exception.getMessage());
+			exception.printStackTrace();
+			throw exception;
+		} finally {
+			try {
+				dao.cerrarRecursos();
+				if (this.conn != null) {
+					this.conn.close();
+				}
+			} catch (SQLException exception) {
+				System.err.println("[EXCEPTION] SQLException While Closing Resources:" + exception.getMessage());
+				exception.printStackTrace();
+				throw exception;
+			}
+		}
+		return resp;
+	}
+	
 
 	//-----------------------------------------------------------------
 	//RFC12

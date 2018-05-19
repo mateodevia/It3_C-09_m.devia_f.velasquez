@@ -156,12 +156,21 @@ public class ClienteService {
 	
 	@GET
 	@Path("/clientessinreservasrango")
-	public Response darClientesSinReservaEnRango(@QueryParam("token") Integer token, @QueryParam("alojamiento") Integer alojamiento, @QueryParam("fechaCotaInferior") Date fechaCotaInferior, @QueryParam("fechaCotaSuperior") Date fechaCotaSuperior) {
+	public Response darClientesSinReservaEnRango(@QueryParam("token") Integer token, @QueryParam("alojamiento") Integer alojamiento, 
+			@QueryParam("fechaCotaInferior") Date fechaCotaInferior, @QueryParam("fechaCotaSuperior") Date fechaCotaSuperior,
+			@QueryParam("agrupamiento") Integer agrupamiento, @QueryParam("ordenamiento") Integer ordenamiento) {
 		
 		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
 		
 		try {
-			return Response.status(200).entity(tm.darClientesSinReservaEnRango(alojamiento, fechaCotaInferior, fechaCotaSuperior, token)).build();
+			
+			if(agrupamiento != null) {
+				return Response.status(200).entity(tm.darClientesSinReservaEnRangoAgrupado(alojamiento, fechaCotaInferior, fechaCotaSuperior, token, agrupamiento, ordenamiento)).build();
+			}
+			
+			else {
+				return Response.status(200).entity(tm.darClientesSinReservaEnRango(alojamiento, fechaCotaInferior, fechaCotaSuperior, token, ordenamiento)).build();
+			}
 		}
 		catch(BusinessLogicException e) {
 			return Response.status(400).entity(doErrorMessage(e)).build();
