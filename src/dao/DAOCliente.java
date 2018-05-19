@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import auxiliary.Fechas;
+import auxiliary.RFC10;
 import auxiliary.RFC13;
 import auxiliary.UsoCliente;
 import auxiliary.UsoTipoCliente;
@@ -412,17 +413,18 @@ public class DAOCliente {
 		return respuesta;
 	}
 	
-	public List<Cliente> getClientesConReservaEnRango(Integer alojamiento, Date cotaInferior, Date cotaSuperior, String agrupamiento, String ordenamiento) throws Exception{
+	public List<Cliente> getClientesConReservaEnRango(Integer alojamiento, Date cotaInferior, Date cotaSuperior, String ordenamiento) throws Exception{
 		
-		String sql = String.format("SELECT *\r\n" + 
+		String sql = String.format("SELECT CLIENTES.*\r\n" + 
 				"FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE =  CLIENTES.CARNET_UNIANDES \r\n" + 
 				"WHERE RESERVAS.ID_AL_OF = %1$s AND '%2$s' <= RESERVAS.FECHA_INICIO AND RESERVAS.FECHA_FIN <= '%3$s'"
 				, alojamiento
 				, Fechas.pasarDateAFormatoSQL(cotaInferior)
 				, Fechas.pasarDateAFormatoSQL(cotaSuperior));
 		
-		//TODO, faltan opciones de agrupamiento y eso
-		
+		if(ordenamiento != null) {
+			sql += "\r\n ORDER BY " + ordenamiento;
+		}
 		
 		System.out.println("[SENTENCIA] " + sql);
 		
@@ -431,8 +433,40 @@ public class DAOCliente {
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql);
 		
+		
 		while(rs.next()) {
 			resp.add(convertResultSetToCliente(rs));
+		}
+		
+		return resp;
+	}
+	
+public List<RFC10> getClientesConReservaEnRangoAgrupando(Integer alojamiento, Date cotaInferior, Date cotaSuperior, String agrupamiento, String ordenamiento) throws Exception{
+		
+		String sql = String.format("SELECT %1$s AS AGRUPAMIENTO, COUNT(*) AS APARICIONES FROM \r\n"
+				+ "(SELECT CLIENTES.* \r\n" + 
+				"FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE =  CLIENTES.CARNET_UNIANDES \r\n" + 
+				"WHERE RESERVAS.ID_AL_OF = %2$s AND '%3$s' <= RESERVAS.FECHA_INICIO AND RESERVAS.FECHA_FIN <= '%4$s' )\r\n"+
+				"GROUP BY %1$s"
+				, agrupamiento
+				, alojamiento
+				, Fechas.pasarDateAFormatoSQL(cotaInferior)
+				, Fechas.pasarDateAFormatoSQL(cotaSuperior));
+				
+		if(ordenamiento != null) {
+			sql += "\r\n ORDER BY " + ordenamiento;
+		}
+		
+		System.out.println("[SENTENCIA] " + sql);
+		
+		List<RFC10> resp = new ArrayList<RFC10>();
+		
+		Statement st = conn.createStatement();
+		ResultSet rs = st.executeQuery(sql);
+		
+		
+		while(rs.next()) {
+			resp.add(new RFC10(rs.getString("AGRUPAMIENTO"), rs.getInt("APARICIONES")));
 		}
 		
 		return resp;

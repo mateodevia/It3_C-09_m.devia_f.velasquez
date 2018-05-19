@@ -1,0 +1,128 @@
+{
+	"info": {
+		"_postman_id": "0bc14bf6-9178-40d6-9e53-184b83835cb0",
+		"name": "IT3_C-09_m.devia_f.velasquez",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "RFC13",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/It3_C-09_m.devia_f.velasquez/rest/clientes/buenosclientes?token=-1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"It3_C-09_m.devia_f.velasquez",
+						"rest",
+						"clientes",
+						"buenosclientes"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "-1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RFC10",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/It3_C-09_m.devia_f.velasquez/rest/clientes/clientesreservasrango?token=-1&alojamiento=46711&fechaCotaInferior=2002-1-1&fechaCotaSuperior=2040-1-1&agrupamiento=4&ordenamiento=0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"It3_C-09_m.devia_f.velasquez",
+						"rest",
+						"clientes",
+						"clientesreservasrango"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "-1"
+						},
+						{
+							"key": "alojamiento",
+							"value": "46711"
+						},
+						{
+							"key": "fechaCotaInferior",
+							"value": "2002-1-1"
+						},
+						{
+							"key": "fechaCotaSuperior",
+							"value": "2040-1-1"
+						},
+						{
+							"key": "agrupamiento",
+							"value": "4"
+						},
+						{
+							"key": "ordenamiento",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RFC11",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/It3_C-09_m.devia_f.velasquez/rest/clientes/clientessinreservasrango?token=-1&alojamiento=10&fechaCotaInferior=2002-1-1&fechaCotaSuperior=2040-1-1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"It3_C-09_m.devia_f.velasquez",
+						"rest",
+						"clientes",
+						"clientessinreservasrango"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "-1"
+						},
+						{
+							"key": "alojamiento",
+							"value": "10"
+						},
+						{
+							"key": "fechaCotaInferior",
+							"value": "2002-1-1"
+						},
+						{
+							"key": "fechaCotaSuperior",
+							"value": "2040-1-1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

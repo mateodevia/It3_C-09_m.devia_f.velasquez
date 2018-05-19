@@ -137,7 +137,14 @@ public class ClienteService {
 		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
 		
 		try {
-			return Response.status(200).entity(tm.darClientesConReservaEnRango(alojamiento, fechaCotaInferior, fechaCotaSuperior, token, agrupamiento, ordenamiento)).build();
+			
+			if(agrupamiento != null) {
+				return Response.status(200).entity(tm.darClientesConReservaEnRangoAgrupado(alojamiento, fechaCotaInferior, fechaCotaSuperior, token, agrupamiento, ordenamiento)).build();
+			}
+			else {
+				return Response.status(200).entity(tm.darClientesConReservaEnRango(alojamiento, fechaCotaInferior, fechaCotaSuperior, token, ordenamiento)).build();
+			}
+			
 		}
 		catch(BusinessLogicException e) {
 			return Response.status(400).entity(doErrorMessage(e)).build();
