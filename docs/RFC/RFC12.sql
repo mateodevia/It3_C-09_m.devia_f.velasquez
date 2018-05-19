@@ -134,10 +134,9 @@ select numero, (select count(*) as numero_reservas
                             case when extract(year from fecha_inicio) = 2019 then to_char(to_date(fecha_inicio), 'ww') else '0' end as semana_inicio, 
                             case when extract(year from fecha_fin) = 2019 then to_char(to_date(fecha_fin), 'ww') else '52' end as semana_fin 
                         from reservas
-                        where extract(year from fecha_inicio) = 2019 or 
-                            extract(year from fecha_inicio) < 2019  and (extract(year from fecha_fin) > 2019 or extract(year from fecha_fin) = 2019) or 
-                            extract(year from fecha_fin) = 2019 or 
-                            extract(year from fecha_fin) > 2019  and (extract(year from fecha_inicio) < 2019 or extract(year from fecha_inicio) = 2019)
+                        where
+                            extract(year from fecha_inicio) <= 2019  and (extract(year from fecha_fin) >= 2019) or  
+                            extract(year from fecha_fin) >= 2019  and (extract(year from fecha_inicio) <= 2019)
                     )uno
                 where (uno.semana_inicio < numero or uno.semana_inicio = numero) and (uno.semana_fin > numero or uno.semana_fin = numero) and UNO.ID_AL_OF = 10
                 ) as numero_reservas
@@ -311,7 +310,7 @@ from operadores
     order by num_reservas desc)
 where rownum = 1;
 
--- cual es el operador con menos reservas por cada semana
+-- cual es el operador con mas reservas por cada semana
 select numero as semana, (select operadores
 from (
     select 'id:'||operadores.id||', nombre: '||operadores.nombre||', tipo: '||operadores.tipo||', numero de reservas: '||case when ocho.num_reservas is not null then ocho.num_reservas else 0 end as operadores, case when ocho.num_reservas is not null then ocho.num_reservas else 0 end as num_reservas
@@ -344,7 +343,7 @@ from (
     where rownum = 1) as operadores 
 from semanas;
 
--- cual es el operador con mas reservas por cada semana
+-- cual es el operador con menos reservas por cada semana
 select numero as semana, (select operadores
 from (
     select 'id:'||operadores.id||', nombre: '||operadores.nombre||', tipo: '||operadores.tipo||', numero de reservas: '||case when ocho.num_reservas is not null then ocho.num_reservas else 0 end as operadores, case when ocho.num_reservas is not null then ocho.num_reservas else 0 end as num_reservas
@@ -376,4 +375,3 @@ from (
     order by num_reservas asc)
     where rownum = 1) as operadores 
 from semanas;
-
