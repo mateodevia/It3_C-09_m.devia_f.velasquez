@@ -112,7 +112,7 @@ public class DAOFuncionamiento {
 					"        from (select id_aloj, num_reserv\r\n" + 
 					"                from(select id_aloj, num_reserv \r\n" + 
 					"                        from NUM_RESERV_ALOJ_SEM \r\n" + 
-					"                        where semana = numero and anio = "+anio+" \r\n" +
+					"                        where semana = numero and anio = "+anio+" \r\n" + 
 					"                        order by num_reserv asc\r\n" + 
 					"                    ) uno\r\n" + 
 					"                where rownum = 1\r\n" + 
@@ -120,7 +120,26 @@ public class DAOFuncionamiento {
 					"        inner join\r\n" + 
 					"        alojamientos\r\n" + 
 					"        on dos.id_aloj = alojamientos.id\r\n" + 
-					"        ) as alojamiento_menor_ocupacion\r\n" + 
+					"        ) as alojamiento_menor_ocupacion,\r\n" + 
+					"        (select ('id: '||id_op||' nombre: '||nombre||' tipo: '||tipo||' numero de reservas: '||num_reservas) as alojamiento\r\n" + 
+					"        from (select *\r\n" + 
+					"                from (select id_op, sum(num_reserv) num_reservas from NUM_RESERV_ALOJ_SEM where semana = numero and anio = "+anio+" group by ID_OP order by num_reservas desc) seis\r\n" + 
+					"                where rownum = 1\r\n" + 
+					"            )siete\r\n" + 
+					"            inner join\r\n" + 
+					"            operadores\r\n" + 
+					"            on siete.id_op = operadores.id\r\n" + 
+					"        )as operador_mas_solicitado,\r\n" + 
+					"\r\n" + 
+					"        (select ('id: '||id_op||' nombre: '||nombre||' tipo: '||tipo||' numero de reservas: '||num_reservas) as alojamiento\r\n" + 
+					"        from (select *\r\n" + 
+					"                from (select id_op, sum(num_reserv) num_reservas from NUM_RESERV_ALOJ_SEM where semana = numero and anio = "+anio+" group by ID_OP order by num_reservas asc) seis\r\n" + 
+					"                where rownum = 1\r\n" + 
+					"            )siete\r\n" + 
+					"            inner join\r\n" + 
+					"            operadores\r\n" + 
+					"            on siete.id_op = operadores.id\r\n" + 
+					"        )as operador_menos_solicitado\r\n" + 
 					"from semanas";
 
 			Statement st = conn.createStatement();
@@ -133,39 +152,41 @@ public class DAOFuncionamiento {
 				rf = respuesta.get(semana-1);
 				rf.setAlojamientoMasOcupacion(rs.getString("ALOJAMIENTO_MAYOR_OCUPACION"));
 				rf.setAlojamientoMenosOcupacion(rs.getString("ALOJAMIENTO_MENOR_OCUPACION"));
-			}
-
-			String sqlOperadores = "select numero as semana, (select ('id: '||id_op||' nombre: '||nombre||' tipo: '||tipo||' numero de reservas: '||num_reservas) as alojamiento\r\n" + 
-					"                            from (select *\r\n" + 
-					"                                    from (select id_op, sum(num_reserv) num_reservas from NUM_RESERV_ALOJ_SEM where semana = numero and anio = "+anio+" group by ID_OP order by num_reservas desc) seis\r\n" + 
-					"                                    where rownum = 1\r\n" + 
-					"                                )siete\r\n" + 
-					"                                inner join\r\n" + 
-					"                                operadores\r\n" + 
-					"                                on siete.id_op = operadores.id\r\n" + 
-					"                        )as operador_mas_solicitado,\r\n" + 
-					"\r\n" + 
-					"                        (select ('id: '||id_op||' nombre: '||nombre||' tipo: '||tipo||' numero de reservas: '||num_reservas) as alojamiento\r\n" + 
-					"                            from (select *\r\n" + 
-					"                                    from (select id_op, sum(num_reserv) num_reservas from NUM_RESERV_ALOJ_SEM where semana = numero and anio = "+anio+" group by ID_OP order by num_reservas asc) seis\r\n" + 
-					"                                    where rownum = 1\r\n" + 
-					"                                )siete\r\n" + 
-					"                                inner join\r\n" + 
-					"                                operadores\r\n" + 
-					"                                on siete.id_op = operadores.id\r\n" + 
-					"                        )as operador_menos_solicitado\r\n" + 
-					"from semanas";
-
-			rs = st.executeQuery(sqlOperadores);
-
-			while(rs.next()) {
-				semana = rs.getInt("SEMANA");
-				rf = respuesta.get(semana-1);
 				rf.setOperadorMasSolicitado(rs.getString("OPERADOR_MAS_SOLICITADO"));
 				rf.setOperadorMenosSolicitado(rs.getString("OPERADOR_MENOS_SOLICITADO"));
-
 			}
-			
+
+//			String sqlOperadores = "select numero as semana, (select ('id: '||id_op||' nombre: '||nombre||' tipo: '||tipo||' numero de reservas: '||num_reservas) as alojamiento\r\n" + 
+//					"                            from (select *\r\n" + 
+//					"                                    from (select id_op, sum(num_reserv) num_reservas from NUM_RESERV_ALOJ_SEM where semana = numero and anio = "+anio+" group by ID_OP order by num_reservas desc) seis\r\n" + 
+//					"                                    where rownum = 1\r\n" + 
+//					"                                )siete\r\n" + 
+//					"                                inner join\r\n" + 
+//					"                                operadores\r\n" + 
+//					"                                on siete.id_op = operadores.id\r\n" + 
+//					"                        )as operador_mas_solicitado,\r\n" + 
+//					"\r\n" + 
+//					"                        (select ('id: '||id_op||' nombre: '||nombre||' tipo: '||tipo||' numero de reservas: '||num_reservas) as alojamiento\r\n" + 
+//					"                            from (select *\r\n" + 
+//					"                                    from (select id_op, sum(num_reserv) num_reservas from NUM_RESERV_ALOJ_SEM where semana = numero and anio = "+anio+" group by ID_OP order by num_reservas asc) seis\r\n" + 
+//					"                                    where rownum = 1\r\n" + 
+//					"                                )siete\r\n" + 
+//					"                                inner join\r\n" + 
+//					"                                operadores\r\n" + 
+//					"                                on siete.id_op = operadores.id\r\n" + 
+//					"                        )as operador_menos_solicitado\r\n" + 
+//					"from semanas";
+//
+//			rs = st.executeQuery(sqlOperadores);
+//
+//			while(rs.next()) {
+//				semana = rs.getInt("SEMANA");
+//				rf = respuesta.get(semana-1);
+//				rf.setOperadorMasSolicitado(rs.getString("OPERADOR_MAS_SOLICITADO"));
+//				rf.setOperadorMenosSolicitado(rs.getString("OPERADOR_MENOS_SOLICITADO"));
+//
+//			}
+//			
 			return respuesta;
 		}
 }
