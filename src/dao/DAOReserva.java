@@ -161,6 +161,140 @@ public class DAOReserva {
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql);
 
+		//actualiza la tabla nueva
+
+		sql = "select id_al_of, (select to_char(to_date(reservas.fecha_Inicio), 'ww') from dual) as semana_inicio, (extract(year from fecha_inicio)) as anio_inicio, (select to_char(to_date(reservas.fecha_fin), 'ww') from dual) as semana_fin, (extract(year from fecha_fin)) as anio_fin \r\n" + 
+				"from reservas\r\n" + 
+				"where id_al_of = "+reserva.getAlojamiento()+" and fecha_inicio = '"+fechaInicio+"' and fecha_creacion_of = '"+fechaCreacionOF+"'";
+
+		rs = st.executeQuery(sql);
+
+		rs.next();
+
+		Log rpta = new Log(rs.getString("ID_AL_OF")+","+
+				rs.getString("SEMANA_INICIO")+","+
+				rs.getString("ANIO_INICIO")+","+
+				rs.getString("SEMANA_FIN")+","+
+				rs.getString("ANIO_FIN"));
+
+		String act = rpta.getMsg();
+
+		String[] actuales = act.split(",");
+
+		sql = "select * from alojamientos where id = "+ actuales[0];
+
+
+		rs = st.executeQuery(sql);
+
+		rs.next();
+
+		String operador = rs.getString("ID_OP");
+
+		//si los años son iguales
+		if(actuales[2].equals(actuales[4])) {
+
+			//por cada semana desde el inicio hasta el final
+			for(int j = Integer.parseInt(actuales[1]); j <= Integer.parseInt(actuales[3]);j++) {
+
+				sql = "select * from NUM_RESERV_ALOJ_SEM where semana = "+j+" and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+				rs = st.executeQuery(sql);
+
+
+				if(rs.next()){
+
+					int numReservas = rs.getInt("NUM_RESERV");
+
+					numReservas++;
+
+					sql = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[2]+"and id_aloj = " + actuales[0];
+
+					st.executeQuery(sql);
+				}
+				else {
+
+					sql = "insert into NUM_RESERV_ALOJ_SEM (id_aloj, semana, anio, num_reserv, id_op) values (" + actuales[0] + "," + j + "," + actuales[2] + ",1, "+ operador+")";
+					st.executeQuery(sql);
+				}
+			}
+		}
+		else {
+
+			//todas las semanas hasta que se acabe la actual
+			for(int j = Integer.parseInt(actuales[1]); j <= 52; j++) {
+
+				sql = "select * from NUM_RESERV_ALOJ_SEM where semana = "+j+"and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+				rs = st.executeQuery(sql);			
+
+				if(rs.next()){
+
+					int numReservas = rs.getInt("NUM_RESERV");
+
+					numReservas++;
+
+					sql = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[2]+"and id_aloj = " + actuales[0];
+
+					st.executeQuery(sql);
+				}
+				else {
+
+					sql = "insert into NUM_RESERV_ALOJ_SEM (id_aloj, semana, anio, num_reserv, id_op) values (" + actuales[0] + "," + j + "," + actuales[2] + ",1,"+ operador+")";
+					st.executeQuery(sql);
+				}
+			}
+
+			//para todos los años entre el primero y el ultimo
+			for(int j = Integer.parseInt(actuales[2])+1;j<Integer.parseInt(actuales[4]); j++ ) {
+
+				//para todas las semanas del año
+				for(int k = 1; k<=52;k++) {
+
+					sql = "select * from NUM_RESERV_ALOJ_SEM where semana = "+k+"and anio = " + j+" and id_aloj = " + actuales[0];
+					rs = st.executeQuery(sql);			
+
+					if(rs.next()){
+
+						int numReservas = rs.getInt("NUM_RESERV");
+
+						numReservas++;
+
+						sql = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+k+" and anio = " + j+"and id_aloj = " + actuales[0];
+
+						st.executeQuery(sql);
+					}
+					else {
+
+						sql = "insert into NUM_RESERV_ALOJ_SEM (id_aloj, semana, anio, num_reserv, id_op) values (" + actuales[0] + "," + k + "," + j + ",1, "+ operador+")";
+						st.executeQuery(sql);
+
+					}
+				}
+			}
+
+			//para cada semana desde la primera del ultimo año hasta la ultima
+			for(int j = 1; j<=Integer.parseInt(actuales[3]); j++) {
+
+				sql = "select * from NUM_RESERV_ALOJ_SEM where semana = "+j+"and anio = " + actuales[4]+" and id_aloj = " + actuales[0];
+				rs = st.executeQuery(sql);			
+
+				if(rs.next()){
+
+					int numReservas = rs.getInt("NUM_RESERV");
+
+					numReservas++;
+
+					sql = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[4]+"and id_aloj = " + actuales[0];
+
+					st.executeQuery(sql);
+				}
+				else {
+
+					sql = "insert into NUM_RESERV_ALOJ_SEM (id_aloj, semana, anio, num_reserv, id_op) values (" + actuales[0] + "," + j + "," + actuales[4] + ",1, "+ operador+")";
+					st.executeQuery(sql);
+
+				}
+			}
+		}
+
 		st.close();
 
 	}
@@ -335,7 +469,7 @@ public class DAOReserva {
 		ArrayList<Reserva> reservas = new ArrayList<Reserva>();
 
 		System.out.println("CONN " + conn);
-		
+
 		String sql = String.format("SELECT * FROM %1$s.RESERVAS WHERE ID_COLECTIVA = %2$s", USUARIO, idColectiva);
 
 		Statement st = conn.createStatement();
@@ -401,10 +535,162 @@ public class DAOReserva {
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql.toString());
 
-		// PreparedStatement prepStmt = conn.prepareStatement(sql);
-		// recursos.add(prepStmt);
-		// ResultSet rs = prepStmt.executeQuery();
+		//actualiza la tabla nueva
+
+		String fechaInicio = "" + reserva.getFechaInicio().getDate() + "/" + (reserva.getFechaInicio().getMonth() + 1)
+				+ "/" + (reserva.getFechaInicio().getYear() - 100);
+
+		String fechaFin = "" + reserva.getFechaFin().getDate() + "/" + (reserva.getFechaFin().getMonth() + 1) + "/"
+				+ (reserva.getFechaFin().getYear() - 100);
+
+		String fechaCreacionOF = "" + reserva.getFechaCreacionOferta().getDate() + "/"
+				+ (reserva.getFechaCreacionOferta().getMonth() + 1) + "/"
+				+ (reserva.getFechaCreacionOferta().getYear() - 100);
+
+		String	sql2 = "select id_al_of, (select to_char(to_date(reservas.fecha_Inicio), 'ww') from dual) as semana_inicio, (extract(year from fecha_inicio)) as anio_inicio, (select to_char(to_date(reservas.fecha_fin), 'ww') from dual) as semana_fin, (extract(year from fecha_fin)) as anio_fin \r\n" + 
+				"from reservas\r\n" + 
+				"where id_al_of = "+reserva.getAlojamiento()+" and fecha_inicio = '"+fechaInicio+"' and fecha_creacion_of = '"+fechaCreacionOF+"'";
+
+		rs = st.executeQuery(sql2);
+
+		rs.next();
+
+		Log rpta = new Log(rs.getString("ID_AL_OF")+","+
+				rs.getString("SEMANA_INICIO")+","+
+				rs.getString("ANIO_INICIO")+","+
+				rs.getString("SEMANA_FIN")+","+
+				rs.getString("ANIO_FIN"));
+
+		String act = rpta.getMsg();
+
+		String[] actuales = act.split(",");
+
+		sql2 = "select * from alojamientos where id = "+ actuales[0];
+
+
+		rs = st.executeQuery(sql2);
+
+		rs.next();
+
+		String operador = rs.getString("ID_OP");
+
+		//si los años son iguales
+		if(actuales[2].equals(actuales[4])) {
+
+			//por cada semana desde el inicio hasta el final
+			for(int j = Integer.parseInt(actuales[1]); j <= Integer.parseInt(actuales[3]);j++) {
+
+				sql2 = "select * from NUM_RESERV_ALOJ_SEM where semana = "+j+" and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+				rs = st.executeQuery(sql2);
+
+				if(rs.next()) {
+
+					int numReservas = rs.getInt("NUM_RESERV");
+
+					if(numReservas>1){
+
+						numReservas--;
+
+						sql2 = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[2]+"and id_aloj = " + actuales[0];
+
+						st.executeQuery(sql2);
+					}
+					else {
+
+						sql2 = "delete from  NUM_RESERV_ALOJ_SEM where semana = "+j+" and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+						st.executeQuery(sql2);
+					}
+				}
+			}
+		}
+		else {
+
+			//todas las semanas hasta que se acabe la actual
+			for(int j = Integer.parseInt(actuales[1]); j <= 52; j++) {
+
+				sql2 = "select * from NUM_RESERV_ALOJ_SEM where semana = "+j+"and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+				rs = st.executeQuery(sql2);			
+
+				if(rs.next()) {
+
+					int numReservas = rs.getInt("NUM_RESERV");
+
+					if(numReservas>1){
+
+						numReservas--;
+
+						sql2 = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[2]+"and id_aloj = " + actuales[0];
+
+						st.executeQuery(sql2);
+					}
+					else {
+
+						sql2 = "delete from  NUM_RESERV_ALOJ_SEM where semana = "+j+" and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+						st.executeQuery(sql2);
+					}
+				}
+			}
+		}
+
+		//para todos los años entre el primero y el ultimo
+		for(int j = Integer.parseInt(actuales[2])+1;j<Integer.parseInt(actuales[4]); j++ ) {
+
+			//para todas las semanas del año
+			for(int k = 1; k<=52;k++) {
+
+				sql2 = "select * from NUM_RESERV_ALOJ_SEM where semana = "+k+"and anio = " + j+" and id_aloj = " + actuales[0];
+				rs = st.executeQuery(sql2);			
+
+				if(rs.next()) {
+
+					int numReservas = rs.getInt("NUM_RESERV");
+
+					if(numReservas>1){
+
+						numReservas--;
+
+						sql2 = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[2]+"and id_aloj = " + actuales[0];
+
+						st.executeQuery(sql2);
+					}
+					else {
+
+						sql2 = "delete from  NUM_RESERV_ALOJ_SEM where semana = "+j+" and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+						st.executeQuery(sql2);
+					}
+				}
+			}
+		}
+
+		//para cada semana desde la primera del ultimo año hasta la ultima
+		for(int j = 1; j<=Integer.parseInt(actuales[3]); j++) {
+
+			sql2 = "select * from NUM_RESERV_ALOJ_SEM where semana = "+j+"and anio = " + actuales[4]+" and id_aloj = " + actuales[0];
+			ResultSet rs2 = st.executeQuery(sql2);			
+
+			if(rs2.next()){
+
+				int numReservas = rs2.getInt("NUM_RESERV");
+
+				if(numReservas>1){
+
+					numReservas--;
+
+					sql2 = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[2]+"and id_aloj = " + actuales[0];
+
+					st.executeQuery(sql2);
+				}
+				else {
+
+					sql2 = "delete from  NUM_RESERV_ALOJ_SEM where semana = "+j+" and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+					st.executeQuery(sql2);
+				}
+			}
+		}
+		st.close();
 	}
+
+
 
 	public void cancelarReservaSinCommit(Reserva reserva, double multa) throws SQLException {
 
@@ -421,9 +707,160 @@ public class DAOReserva {
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql.toString());
 
-		// PreparedStatement prepStmt = conn.prepareStatement(sql);
-		// recursos.add(prepStmt);
-		// ResultSet rs = prepStmt.executeQuery();
+		//actualiza la tabla nueva
+
+		String fechaInicio = "" + reserva.getFechaInicio().getDate() + "/" + (reserva.getFechaInicio().getMonth() + 1)
+				+ "/" + (reserva.getFechaInicio().getYear() - 100);
+
+		String fechaFin = "" + reserva.getFechaFin().getDate() + "/" + (reserva.getFechaFin().getMonth() + 1) + "/"
+				+ (reserva.getFechaFin().getYear() - 100);
+
+		String fechaCreacionOF = "" + reserva.getFechaCreacionOferta().getDate() + "/"
+				+ (reserva.getFechaCreacionOferta().getMonth() + 1) + "/"
+				+ (reserva.getFechaCreacionOferta().getYear() - 100);
+
+		String	sql2 = "select id_al_of, (select to_char(to_date(reservas.fecha_Inicio), 'ww') from dual) as semana_inicio, (extract(year from fecha_inicio)) as anio_inicio, (select to_char(to_date(reservas.fecha_fin), 'ww') from dual) as semana_fin, (extract(year from fecha_fin)) as anio_fin \r\n" + 
+				"from reservas\r\n" + 
+				"where id_al_of = "+reserva.getAlojamiento()+" and fecha_inicio = '"+fechaInicio+"' and fecha_creacion_of = '"+fechaCreacionOF+"'";
+
+		rs = st.executeQuery(sql2);
+
+		rs.next();
+
+		Log rpta = new Log(rs.getString("ID_AL_OF")+","+
+				rs.getString("SEMANA_INICIO")+","+
+				rs.getString("ANIO_INICIO")+","+
+				rs.getString("SEMANA_FIN")+","+
+				rs.getString("ANIO_FIN"));
+
+		String act = rpta.getMsg();
+
+		String[] actuales = act.split(",");
+
+		sql2 = "select * from alojamientos where id = "+ actuales[0];
+
+
+		rs = st.executeQuery(sql2);
+
+		rs.next();
+
+		String operador = rs.getString("ID_OP");
+
+		//si los años son iguales
+		if(actuales[2].equals(actuales[4])) {
+
+			//por cada semana desde el inicio hasta el final
+			for(int j = Integer.parseInt(actuales[1]); j <= Integer.parseInt(actuales[3]);j++) {
+
+				sql2 = "select * from NUM_RESERV_ALOJ_SEM where semana = "+j+" and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+				ResultSet rs2 = st.executeQuery(sql2);			
+
+				if(rs2.next()) {
+
+					int numReservas = rs2.getInt("NUM_RESERV");
+
+					if(numReservas>1){
+
+						numReservas--;
+
+						sql2 = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[2]+"and id_aloj = " + actuales[0];
+
+						st.executeQuery(sql2);
+					}
+					else {
+
+						sql2 = "delete from  NUM_RESERV_ALOJ_SEM where semana = "+j+" and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+						st.executeQuery(sql2);
+					}
+				}
+			}
+		}
+		else {
+
+			//todas las semanas hasta que se acabe la actual
+			for(int j = Integer.parseInt(actuales[1]); j <= 52; j++) {
+
+				sql2 = "select * from NUM_RESERV_ALOJ_SEM where semana = "+j+"and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+				ResultSet rs2 = st.executeQuery(sql2);			
+
+				if(rs2.next()) {
+
+					int numReservas = rs2.getInt("NUM_RESERV");
+
+					if(numReservas>1){
+
+						numReservas--;
+
+						sql2 = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[2]+"and id_aloj = " + actuales[0];
+
+						st.executeQuery(sql2);
+					}
+					else {
+
+						sql2 = "delete from  NUM_RESERV_ALOJ_SEM where semana = "+j+" and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+						st.executeQuery(sql2);
+					}
+				}
+			}
+		}
+
+		//para todos los años entre el primero y el ultimo
+		for(int j = Integer.parseInt(actuales[2])+1;j<Integer.parseInt(actuales[4]); j++ ) {
+
+			//para todas las semanas del año
+			for(int k = 1; k<=52;k++) {
+
+				sql2 = "select * from NUM_RESERV_ALOJ_SEM where semana = "+k+"and anio = " + j+" and id_aloj = " + actuales[0];
+				ResultSet rs2 = st.executeQuery(sql2);			
+
+				if(rs2.next()) {
+
+					int numReservas = rs2.getInt("NUM_RESERV");
+
+					if(numReservas>1){
+
+						numReservas--;
+
+						sql2 = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[2]+"and id_aloj = " + actuales[0];
+
+						st.executeQuery(sql2);
+					}
+					else {
+
+						sql2 = "delete from  NUM_RESERV_ALOJ_SEM where semana = "+j+" and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+						st.executeQuery(sql2);
+					}
+				}
+
+			}
+		}
+
+		//para cada semana desde la primera del ultimo año hasta la ultima
+		for(int j = 1; j<=Integer.parseInt(actuales[3]); j++) {
+
+			sql2 = "select * from NUM_RESERV_ALOJ_SEM where semana = "+j+"and anio = " + actuales[4]+" and id_aloj = " + actuales[0];
+			ResultSet rs2 = st.executeQuery(sql2);			
+
+			if(rs2.next()) {
+
+				int numReservas = rs2.getInt("NUM_RESERV");
+
+				if(numReservas>1){
+
+					numReservas--;
+
+					sql2 = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[2]+"and id_aloj = " + actuales[0];
+
+					st.executeQuery(sql2);
+				}
+				else {
+
+					sql2 = "delete from  NUM_RESERV_ALOJ_SEM where semana = "+j+" and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+					st.executeQuery(sql2);
+				}
+			}
+		}
+		st.close();
 	}
 
 	// ----------------------------------------------------------------------------------------------
@@ -515,9 +952,160 @@ public class DAOReserva {
 		Statement st = conn.createStatement();
 		st.executeQuery(sql.toString());
 
-		// PreparedStatement prepStmt = conn.prepareStatement(sql);
-		// recursos.add(prepStmt);
-		// ResultSet rs = prepStmt.executeQuery();
+		//actualiza la tabla nueva
+
+		String fechaInicio = "" + r.getFechaInicio().getDate() + "/" + (r.getFechaInicio().getMonth() + 1)
+				+ "/" + (r.getFechaInicio().getYear() - 100);
+
+		String fechaFin = "" + r.getFechaFin().getDate() + "/" + (r.getFechaFin().getMonth() + 1) + "/"
+				+ (r.getFechaFin().getYear() - 100);
+
+		String fechaCreacionOF = "" + r.getFechaCreacionOferta().getDate() + "/"
+				+ (r.getFechaCreacionOferta().getMonth() + 1) + "/"
+				+ (r.getFechaCreacionOferta().getYear() - 100);
+
+		String	sql2 = "select id_al_of, (select to_char(to_date(reservas.fecha_Inicio), 'ww') from dual) as semana_inicio, (extract(year from fecha_inicio)) as anio_inicio, (select to_char(to_date(reservas.fecha_fin), 'ww') from dual) as semana_fin, (extract(year from fecha_fin)) as anio_fin \r\n" + 
+				"from reservas\r\n" + 
+				"where id_al_of = "+r.getAlojamiento()+" and fecha_inicio = '"+fechaInicio+"' and fecha_creacion_of = '"+fechaCreacionOF+"'";
+
+		ResultSet rs = st.executeQuery(sql2);
+
+		rs.next();
+
+		Log rpta = new Log(rs.getString("ID_AL_OF")+","+
+				rs.getString("SEMANA_INICIO")+","+
+				rs.getString("ANIO_INICIO")+","+
+				rs.getString("SEMANA_FIN")+","+
+				rs.getString("ANIO_FIN"));
+
+		String act = rpta.getMsg();
+
+		String[] actuales = act.split(",");
+
+		sql2 = "select * from alojamientos where id = "+ actuales[0];
+
+
+		rs = st.executeQuery(sql2);
+
+		rs.next();
+
+		String operador = rs.getString("ID_OP");
+
+		//si los años son iguales
+		if(actuales[2].equals(actuales[4])) {
+
+			//por cada semana desde el inicio hasta el final
+			for(int j = Integer.parseInt(actuales[1]); j <= Integer.parseInt(actuales[3]);j++) {
+
+				sql2 = "select * from NUM_RESERV_ALOJ_SEM where semana = "+j+" and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+				ResultSet rs2 = st.executeQuery(sql2);			
+
+				if(rs2.next()) {
+
+					int numReservas = rs2.getInt("NUM_RESERV");
+
+					if(numReservas>1){
+
+						numReservas--;
+
+						sql2 = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[2]+"and id_aloj = " + actuales[0];
+
+						st.executeQuery(sql2);
+					}
+					else {
+
+						sql2 = "delete from  NUM_RESERV_ALOJ_SEM where semana = "+j+" and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+						st.executeQuery(sql2);
+					}
+				}
+			}
+		}
+		else {
+
+			//todas las semanas hasta que se acabe la actual
+			for(int j = Integer.parseInt(actuales[1]); j <= 52; j++) {
+
+				sql2 = "select * from NUM_RESERV_ALOJ_SEM where semana = "+j+"and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+				ResultSet rs2 = st.executeQuery(sql2);			
+
+				if(rs2.next()) {
+
+					int numReservas = rs2.getInt("NUM_RESERV");
+
+					if(numReservas>1){
+
+						numReservas--;
+
+						sql2 = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[2]+"and id_aloj = " + actuales[0];
+
+						st.executeQuery(sql2);
+					}
+					else {
+
+						sql2 = "delete from  NUM_RESERV_ALOJ_SEM where semana = "+j+" and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+						st.executeQuery(sql2);
+					}
+				}
+			}
+		}
+
+		//para todos los años entre el primero y el ultimo
+		for(int j = Integer.parseInt(actuales[2])+1;j<Integer.parseInt(actuales[4]); j++ ) {
+
+			//para todas las semanas del año
+			for(int k = 1; k<=52;k++) {
+
+				sql2 = "select * from NUM_RESERV_ALOJ_SEM where semana = "+k+"and anio = " + j+" and id_aloj = " + actuales[0];
+				ResultSet rs2 = st.executeQuery(sql2);			
+
+				if(rs2.next()) {
+
+					int numReservas = rs2.getInt("NUM_RESERV");
+
+					if(numReservas>1){
+
+						numReservas--;
+
+						sql2 = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[2]+"and id_aloj = " + actuales[0];
+
+						st.executeQuery(sql2);
+					}
+					else {
+
+						sql2 = "delete from  NUM_RESERV_ALOJ_SEM where semana = "+j+" and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+						st.executeQuery(sql2);
+					}
+				}
+
+			}
+		}
+
+		//para cada semana desde la primera del ultimo año hasta la ultima
+		for(int j = 1; j<=Integer.parseInt(actuales[3]); j++) {
+
+			sql2 = "select * from NUM_RESERV_ALOJ_SEM where semana = "+j+"and anio = " + actuales[4]+" and id_aloj = " + actuales[0];
+			ResultSet rs2 = st.executeQuery(sql2);			
+
+			if(rs2.next()) {
+
+				int numReservas = rs2.getInt("NUM_RESERV");
+
+				if(numReservas>1){
+
+					numReservas--;
+
+					sql2 = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[2]+"and id_aloj = " + actuales[0];
+
+					st.executeQuery(sql2);
+				}
+				else {
+
+					sql2 = "delete from  NUM_RESERV_ALOJ_SEM where semana = "+j+" and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+					st.executeQuery(sql2);
+				}
+			}
+		}
+		st.close();
 
 	}
 
@@ -534,6 +1122,152 @@ public class DAOReserva {
 		conn.setAutoCommit(false);
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql);
+
+		//actualiza la tabla nueva
+
+		String fechaInicio = "" + r.getFechaInicio().getDate() + "/" + (r.getFechaInicio().getMonth() + 1)
+				+ "/" + (r.getFechaInicio().getYear() - 100);
+
+		String fechaFin = "" + r.getFechaFin().getDate() + "/" + (r.getFechaFin().getMonth() + 1) + "/"
+				+ (r.getFechaFin().getYear() - 100);
+
+		String fechaCreacionOF = "" + r.getFechaCreacionOferta().getDate() + "/"
+				+ (r.getFechaCreacionOferta().getMonth() + 1) + "/"
+				+ (r.getFechaCreacionOferta().getYear() - 100);
+
+		sql = "select id_al_of, (select to_char(to_date(reservas.fecha_Inicio), 'ww') from dual) as semana_inicio, (extract(year from fecha_inicio)) as anio_inicio, (select to_char(to_date(reservas.fecha_fin), 'ww') from dual) as semana_fin, (extract(year from fecha_fin)) as anio_fin \r\n" + 
+				"from reservas\r\n" + 
+				"where id_al_of = "+r.getAlojamiento()+" and fecha_inicio = '"+fechaInicio+"' and fecha_creacion_of = '"+fechaCreacionOF+"'";
+
+		rs = st.executeQuery(sql);
+
+		rs.next();
+
+		Log rpta = new Log(rs.getString("ID_AL_OF")+","+
+				rs.getString("SEMANA_INICIO")+","+
+				rs.getString("ANIO_INICIO")+","+
+				rs.getString("SEMANA_FIN")+","+
+				rs.getString("ANIO_FIN"));
+
+		String act = rpta.getMsg();
+
+		String[] actuales = act.split(",");
+
+		sql = "select * from alojamientos where id = "+ actuales[0];
+
+
+		rs = st.executeQuery(sql);
+
+		rs.next();
+
+		String operador = rs.getString("ID_OP");
+
+		//si los años son iguales
+		if(actuales[2].equals(actuales[4])) {
+
+			//por cada semana desde el inicio hasta el final
+			for(int j = Integer.parseInt(actuales[1]); j <= Integer.parseInt(actuales[3]);j++) {
+
+				sql = "select * from NUM_RESERV_ALOJ_SEM where semana = "+j+" and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+				rs = st.executeQuery(sql);
+
+
+				if(rs.next()){
+
+					int numReservas = rs.getInt("NUM_RESERV");
+
+					numReservas++;
+
+					sql = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[2]+"and id_aloj = " + actuales[0];
+
+					st.executeQuery(sql);
+				}
+				else {
+
+					sql = "insert into NUM_RESERV_ALOJ_SEM (id_aloj, semana, anio, num_reserv, id_op) values (" + actuales[0] + "," + j + "," + actuales[2] + ",1, "+ operador+")";
+					st.executeQuery(sql);
+				}
+			}
+		}
+		else {
+
+			//todas las semanas hasta que se acabe la actual
+			for(int j = Integer.parseInt(actuales[1]); j <= 52; j++) {
+
+				sql = "select * from NUM_RESERV_ALOJ_SEM where semana = "+j+"and anio = " + actuales[2]+" and id_aloj = " + actuales[0];
+				rs = st.executeQuery(sql);			
+
+				if(rs.next()){
+
+					int numReservas = rs.getInt("NUM_RESERV");
+
+					numReservas++;
+
+					sql = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[2]+"and id_aloj = " + actuales[0];
+
+					st.executeQuery(sql);
+				}
+				else {
+
+					sql = "insert into NUM_RESERV_ALOJ_SEM (id_aloj, semana, anio, num_reserv, id_op) values (" + actuales[0] + "," + j + "," + actuales[2] + ",1,"+ operador+")";
+					st.executeQuery(sql);
+				}
+			}
+
+			//para todos los años entre el primero y el ultimo
+			for(int j = Integer.parseInt(actuales[2])+1;j<Integer.parseInt(actuales[4]); j++ ) {
+
+				//para todas las semanas del año
+				for(int k = 1; k<=52;k++) {
+
+					sql = "select * from NUM_RESERV_ALOJ_SEM where semana = "+k+"and anio = " + j+" and id_aloj = " + actuales[0];
+					rs = st.executeQuery(sql);			
+
+					if(rs.next()){
+
+						int numReservas = rs.getInt("NUM_RESERV");
+
+						numReservas++;
+
+						sql = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+k+" and anio = " + j+"and id_aloj = " + actuales[0];
+
+						st.executeQuery(sql);
+					}
+					else {
+
+						sql = "insert into NUM_RESERV_ALOJ_SEM (id_aloj, semana, anio, num_reserv, id_op) values (" + actuales[0] + "," + k + "," + j + ",1, "+ operador+")";
+						st.executeQuery(sql);
+
+					}
+				}
+			}
+
+			//para cada semana desde la primera del ultimo año hasta la ultima
+			for(int j = 1; j<=Integer.parseInt(actuales[3]); j++) {
+
+				sql = "select * from NUM_RESERV_ALOJ_SEM where semana = "+j+"and anio = " + actuales[4]+" and id_aloj = " + actuales[0];
+				rs = st.executeQuery(sql);			
+
+				if(rs.next()){
+
+					int numReservas = rs.getInt("NUM_RESERV");
+
+					numReservas++;
+
+					sql = "update NUM_RESERV_ALOJ_SEM set NUM_RESERV = "+numReservas+ " where semana = "+j+" and anio = " + actuales[4]+"and id_aloj = " + actuales[0];
+
+					st.executeQuery(sql);
+				}
+				else {
+
+					sql = "insert into NUM_RESERV_ALOJ_SEM (id_aloj, semana, anio, num_reserv, id_op) values (" + actuales[0] + "," + j + "," + actuales[4] + ",1, "+ operador+")";
+					st.executeQuery(sql);
+
+				}
+			}
+		}
+
+		st.close();
 	}
 
 	public ArrayList<Log> getUnidadConMayor(String tipoAl, String unidadTiempo) throws SQLException {
@@ -555,7 +1289,7 @@ public class DAOReserva {
 
 			if (rs.next()) {
 				max = new Log("El mes de mayor demanda es el " + rs.getInt("MES") + "/" + rs.getInt("ANIO")
-						+ " del aÃ±o " + rs.getInt("ANIO") + " con " + rs.getInt("DEMANDA") + " reservas registradas");
+				+ " del aÃ±o " + rs.getInt("ANIO") + " con " + rs.getInt("DEMANDA") + " reservas registradas");
 			}
 
 			sql = String.format(
@@ -568,7 +1302,7 @@ public class DAOReserva {
 			Log min = null;
 			if (rs.next()) {
 				min = new Log("El mes de menor demanda es el " + rs.getInt("MES") + "/" + rs.getInt("ANIO")
-						+ " del aÃ±o " + rs.getInt("ANIO") + " con " + rs.getInt("DEMANDA") + " reservas registradas");
+				+ " del aÃ±o " + rs.getInt("ANIO") + " con " + rs.getInt("DEMANDA") + " reservas registradas");
 			}
 			sql = String.format(
 					"SELECT EXTRACT(MONTH FROM FECHA_FIN) AS MES, EXTRACT(YEAR FROM FECHA_FIN) AS ANIO, SUM(PRECIO_RESERVA) AS DINERO FROM RESERVAS INNER JOIN ALOJAMIENTOS ON ID_AL_OF = ID WHERE ESTADO <> 'CANCELADA' AND FECHA_FIN < CURRENT_DATE AND TIPO = '%2$s' GROUP BY EXTRACT(MONTH FROM FECHA_FIN), EXTRACT(YEAR FROM FECHA_FIN) ORDER BY SUM(PRECIO_RESERVA) DESC",
@@ -581,7 +1315,7 @@ public class DAOReserva {
 
 			if (rs.next()) {
 				maxDinero = new Log("El mes con mas ingresos es el " + rs.getInt("MES") + "/" + rs.getInt("ANIO")
-						+ " con $" + rs.getInt("DINERO"));
+				+ " con $" + rs.getInt("DINERO"));
 			}
 			rpta.add(min);
 			rpta.add(max);
@@ -601,11 +1335,11 @@ public class DAOReserva {
 			}
 
 			sql = String.format(
-						"SELECT tFechas.ANIO, (CASE WHEN DEMANDA IS NULL THEN 0 ELSE DEMANDA END) AS DEMANDA FROM ( SELECT EXTRACT(YEAR FROM FECHA) AS ANIO, COUNT(*) FROM (  SELECT (SELECT MIN(FECHA_INICIO) FROM %1$s.RESERVAS)  + ROWNUM -1 AS FECHA FROM all_objects WHERE ROWNUM <= CURRENT_DATE - (SELECT MIN(FECHA_INICIO) FROM RESERVAS)+1 ) GROUP BY EXTRACT(YEAR FROM FECHA) )tFechas LEFT OUTER JOIN ( SELECT ANIO, COUNT(*) AS DEMANDA FROM    (   SELECT EXTRACT(YEAR FROM FECHA) AS ANIO, COUNT(*) FROM (  SELECT (SELECT MIN(FECHA_INICIO) FROM %1$s.RESERVAS)  + ROWNUM -1 AS FECHA FROM all_objects WHERE ROWNUM <= CURRENT_DATE - (SELECT MIN(FECHA_INICIO) FROM RESERVAS)+1 ) GROUP BY EXTRACT(YEAR FROM FECHA) ) LEFT OUTER JOIN %1$s.RESERVAS ON ANIO IN ( SELECT EXTRACT(YEAR FROM FECHA) AS ANIO FROM     (  SELECT FECHA_INICIO  + ROWNUM -1 AS FECHA FROM all_objects WHERE ROWNUM <= FECHA_FIN - (FECHA_INICIO)+1 ) ) INNER JOIN %1$s.ALOJAMIENTOS ON ID_AL_OF = ID WHERE TIPO = '%2$s' AND ESTADO <>  'CANCELADA' GROUP BY ANIO )  fechasResv ON tfechas.anio = fechasResv.anio ORDER BY DEMANDA ASC" 
+					"SELECT tFechas.ANIO, (CASE WHEN DEMANDA IS NULL THEN 0 ELSE DEMANDA END) AS DEMANDA FROM ( SELECT EXTRACT(YEAR FROM FECHA) AS ANIO, COUNT(*) FROM (  SELECT (SELECT MIN(FECHA_INICIO) FROM %1$s.RESERVAS)  + ROWNUM -1 AS FECHA FROM all_objects WHERE ROWNUM <= CURRENT_DATE - (SELECT MIN(FECHA_INICIO) FROM RESERVAS)+1 ) GROUP BY EXTRACT(YEAR FROM FECHA) )tFechas LEFT OUTER JOIN ( SELECT ANIO, COUNT(*) AS DEMANDA FROM    (   SELECT EXTRACT(YEAR FROM FECHA) AS ANIO, COUNT(*) FROM (  SELECT (SELECT MIN(FECHA_INICIO) FROM %1$s.RESERVAS)  + ROWNUM -1 AS FECHA FROM all_objects WHERE ROWNUM <= CURRENT_DATE - (SELECT MIN(FECHA_INICIO) FROM RESERVAS)+1 ) GROUP BY EXTRACT(YEAR FROM FECHA) ) LEFT OUTER JOIN %1$s.RESERVAS ON ANIO IN ( SELECT EXTRACT(YEAR FROM FECHA) AS ANIO FROM     (  SELECT FECHA_INICIO  + ROWNUM -1 AS FECHA FROM all_objects WHERE ROWNUM <= FECHA_FIN - (FECHA_INICIO)+1 ) ) INNER JOIN %1$s.ALOJAMIENTOS ON ID_AL_OF = ID WHERE TIPO = '%2$s' AND ESTADO <>  'CANCELADA' GROUP BY ANIO )  fechasResv ON tfechas.anio = fechasResv.anio ORDER BY DEMANDA ASC" 
 					,USUARIO, tipoAl);
 
-			
-			
+
+
 			st = conn.createStatement();
 			rs = st.executeQuery(sql);
 
@@ -669,7 +1403,7 @@ public class DAOReserva {
 
 			if (rs.next()) {
 				maxDinero = new Log("La semana con mas ingresos es la semana numero " + rs.getInt("SEMANA")
-						+ " del aÃ±o " + rs.getInt("ANIO") + " con $" + rs.getInt("DINERO"));
+				+ " del aÃ±o " + rs.getInt("ANIO") + " con $" + rs.getInt("DINERO"));
 			}
 
 			rpta.add(min);
@@ -678,10 +1412,10 @@ public class DAOReserva {
 
 		}
 		else if(unidadTiempo.equals(TipoUnidadTiempo.DIA)) {
-			
+
 			String sql = String.format(
 					"SELECT tFechas.DIA, tFechas.MES, tFechas.ANIO, (CASE WHEN DEMANDA IS NULL THEN 0 ELSE DEMANDA END) AS DEMANDA FROM (SELECT EXTRACT(DAY FROM FECHA) AS DIA, EXTRACT(MONTH FROM FECHA) AS MES, EXTRACT(YEAR FROM FECHA) AS ANIO, COUNT(*) FROM (  SELECT (SELECT MIN(FECHA_INICIO) FROM RESERVAS)  + ROWNUM -1 AS FECHA FROM all_objects WHERE ROWNUM <= CURRENT_DATE - (SELECT MIN(FECHA_INICIO) FROM RESERVAS)+1 ) GROUP BY EXTRACT(DAY FROM FECHA), EXTRACT(MONTH FROM FECHA), EXTRACT(YEAR FROM FECHA) )tFechas LEFT OUTER JOIN( SELECT DIA, MES, ANIO, COUNT(*) AS DEMANDA FROM    (   SELECT EXTRACT(DAY FROM FECHA) AS DIA, EXTRACT(MONTH FROM FECHA) AS MES, EXTRACT(YEAR FROM FECHA) AS ANIO, COUNT(*) FROM (  SELECT (SELECT MIN(FECHA_INICIO) FROM RESERVAS)  + ROWNUM -1 AS FECHA FROM all_objects WHERE ROWNUM <= CURRENT_DATE - (SELECT MIN(FECHA_INICIO) FROM RESERVAS)+1 ) GROUP BY EXTRACT(DAY FROM FECHA), EXTRACT(MONTH FROM FECHA), EXTRACT(YEAR FROM FECHA) )LEFT OUTER JOIN RESERVAS ON (DIA, MES, ANIO) IN ( SELECT EXTRACT(DAY FROM FECHA), EXTRACT(MONTH FROM FECHA) AS MES, EXTRACT(YEAR FROM FECHA) AS ANIO FROM (  SELECT FECHA_INICIO  + ROWNUM -1 AS FECHA FROM all_objects WHERE ROWNUM <= FECHA_FIN - (FECHA_INICIO)+1) ) INNER JOIN ALOJAMIENTOS ON ID_AL_OF = ID WHERE TIPO = '%2$s' AND ESTADO <>  'CANCELADA' GROUP BY DIA, MES, ANIO) fechasResv ON tFechas.ANIO = fechasResv.ANIO AND tFechas.MES = fechasResv.MES AND tFechas.DIA = fechasResv.DIA ORDER BY DEMANDA DESC"
-							,USUARIO, tipoAl);
+					,USUARIO, tipoAl);
 
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery(sql);
@@ -695,8 +1429,8 @@ public class DAOReserva {
 					"SELECT tFechas.DIA, tFechas.MES, tFechas.ANIO, (CASE WHEN DEMANDA IS NULL THEN 0 ELSE DEMANDA END) AS DEMANDA FROM (SELECT EXTRACT(DAY FROM FECHA) AS DIA, EXTRACT(MONTH FROM FECHA) AS MES, EXTRACT(YEAR FROM FECHA) AS ANIO, COUNT(*) FROM (  SELECT (SELECT MIN(FECHA_INICIO) FROM RESERVAS)  + ROWNUM -1 AS FECHA FROM all_objects WHERE ROWNUM <= CURRENT_DATE - (SELECT MIN(FECHA_INICIO) FROM RESERVAS)+1 ) GROUP BY EXTRACT(DAY FROM FECHA), EXTRACT(MONTH FROM FECHA), EXTRACT(YEAR FROM FECHA) )tFechas LEFT OUTER JOIN( SELECT DIA, MES, ANIO, COUNT(*) AS DEMANDA FROM    (   SELECT EXTRACT(DAY FROM FECHA) AS DIA, EXTRACT(MONTH FROM FECHA) AS MES, EXTRACT(YEAR FROM FECHA) AS ANIO, COUNT(*) FROM (  SELECT (SELECT MIN(FECHA_INICIO) FROM RESERVAS)  + ROWNUM -1 AS FECHA FROM all_objects WHERE ROWNUM <= CURRENT_DATE - (SELECT MIN(FECHA_INICIO) FROM RESERVAS)+1 ) GROUP BY EXTRACT(DAY FROM FECHA), EXTRACT(MONTH FROM FECHA), EXTRACT(YEAR FROM FECHA) )LEFT OUTER JOIN RESERVAS ON (DIA, MES, ANIO) IN ( SELECT EXTRACT(DAY FROM FECHA), EXTRACT(MONTH FROM FECHA) AS MES, EXTRACT(YEAR FROM FECHA) AS ANIO FROM (  SELECT FECHA_INICIO  + ROWNUM -1 AS FECHA FROM all_objects WHERE ROWNUM <= FECHA_FIN - (FECHA_INICIO)+1) ) INNER JOIN ALOJAMIENTOS ON ID_AL_OF = ID WHERE TIPO = '%2$s' AND ESTADO <>  'CANCELADA' GROUP BY DIA, MES, ANIO) fechasResv ON tFechas.ANIO = fechasResv.ANIO AND tFechas.MES = fechasResv.MES AND tFechas.DIA = fechasResv.DIA ORDER BY DEMANDA ASC"
 					,USUARIO, tipoAl);
 
-			
-			
+
+
 			st = conn.createStatement();
 			rs = st.executeQuery(sql);
 
@@ -720,7 +1454,7 @@ public class DAOReserva {
 			rpta.add(min);
 			rpta.add(max);
 			rpta.add(maxDinero);
-			
+
 		}
 
 		return rpta;
