@@ -70,7 +70,7 @@ import vos.ViviendaUniversitaria;
 
 public class AlohAndesTransactionManager {
 
-	private static final int TOKEN_ADMIN = -1;
+	private static final Long TOKEN_ADMIN = -1L;
 	
 	// -----------------------------------------------------
 	// CONSTANTES
@@ -2395,11 +2395,9 @@ public class AlohAndesTransactionManager {
 		
 	}
 	
-	public List<RFC10> darClientesConReservaEnRangoAgrupado(Integer idAloj, Date cotaInferior, Date cotaSuperior, Integer token, Integer agrupamiento, Integer ordenamiento) throws Exception{
+	public List<RFC10> darClientesConReservaEnRangoAgrupado(Long idAloj, Date cotaInferior, Date cotaSuperior, Long token, Integer agrupamiento, Integer ordenamiento) throws Exception{
 		
-		if(token != TOKEN_ADMIN && token != idAloj) {
-			throw new BusinessLogicException("No tiene permisos para realizar esta acción");
-		}
+		validarToken(idAloj, token);
 		
 		DAOCliente dao = new DAOCliente();
 		
@@ -2440,11 +2438,9 @@ public class AlohAndesTransactionManager {
 		return resp;
 	}
 	
-	public List<Cliente> darClientesConReservaEnRango(Integer idAloj, Date cotaInferior, Date cotaSuperior, Integer token, Integer ordenamiento) throws Exception{
+	public List<Cliente> darClientesConReservaEnRango(Long idAloj, Date cotaInferior, Date cotaSuperior, Long token, Integer ordenamiento) throws Exception{
 				
-		if(token != TOKEN_ADMIN && token != idAloj) {
-			throw new BusinessLogicException("No tiene permisos para realizar esta acción");
-		}
+		validarToken(idAloj, token);
 		
 		DAOCliente dao = new DAOCliente();
 		
@@ -2488,14 +2484,60 @@ public class AlohAndesTransactionManager {
 	//RFC11
 	//-----------------------------------------------------------------
 		
-	public List<Cliente> darClientesSinReservaEnRango(Integer idAloj, Date cotaInferior, Date cotaSuperior, Integer token, Integer ordenamiento) throws Exception{
+	private void validarToken(Long idAloj, Long token) throws Exception{
 		
-		if(token != TOKEN_ADMIN && token != idAloj) {
-			throw new BusinessLogicException("No tiene permisos para realizar esta acción");
+		DAOAlojamiento dao = new DAOAlojamiento();
+		try {
+			
+			this.conn = darConexion();
+			
+			conn.setAutoCommit(false);
+			
+			dao.setConn(conn);
+			
+			Alojamiento al = dao.findAlojamientoById(idAloj);
+			
+			if(al == null) {
+				throw new BusinessLogicException("El alojamiento dado no existe");
+			}
+			else if(!al.getOperador().equals(token) && !token.equals(TOKEN_ADMIN)) {
+				throw new BusinessLogicException("No tiene permisos para realizar esto");
+			}
+		}catch (SQLException sqlException) {
+			conn.rollback();
+			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
+			sqlException.printStackTrace();
+			throw sqlException;
+		}catch (BusinessLogicException exception) {
+			System.err.println("[EXCEPTION] BusinessLogicException: " + exception.getMessage());
+			exception.printStackTrace();
+			throw exception;
 		}
+		catch (Exception exception) {
+			System.err.println("[EXCEPTION] General Exception:" + exception.getMessage());
+			exception.printStackTrace();
+			throw exception;
+		} finally {
+			try {
+				dao.cerrarRecursos();
+				if (this.conn != null) {
+					this.conn.close();
+				}
+			} catch (SQLException exception) {
+				System.err.println("[EXCEPTION] SQLException While Closing Resources:" + exception.getMessage());
+				exception.printStackTrace();
+				throw exception;
+			}
+		}
+	}
+	
+	public List<Cliente> darClientesSinReservaEnRango(Long idAloj, Date cotaInferior, Date cotaSuperior, Long token, Integer ordenamiento) throws Exception{
+
+		
+		validarToken(idAloj, token);
+		
 		
 		DAOCliente dao = new DAOCliente();
-		
 		List<Cliente> resp = new ArrayList<Cliente>();
 		try {
 			this.conn = darConexion();
@@ -2514,7 +2556,12 @@ public class AlohAndesTransactionManager {
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
 			throw sqlException;
-		} catch (Exception exception) {
+		}catch (BusinessLogicException exception) {
+			System.err.println("[EXCEPTION] BusinessLogicException: " + exception.getMessage());
+			exception.printStackTrace();
+			throw exception;
+		}
+		catch (Exception exception) {
 			System.err.println("[EXCEPTION] General Exception:" + exception.getMessage());
 			exception.printStackTrace();
 			throw exception;
@@ -2533,11 +2580,9 @@ public class AlohAndesTransactionManager {
 		return resp;
 	}
 	
-	public List<RFC10> darClientesSinReservaEnRangoAgrupado(Integer idAloj, Date cotaInferior, Date cotaSuperior, Integer token, Integer agrupamiento, Integer ordenamiento) throws Exception{
+	public List<RFC10> darClientesSinReservaEnRangoAgrupado(Long idAloj, Date cotaInferior, Date cotaSuperior, Long token, Integer agrupamiento, Integer ordenamiento) throws Exception{
 		
-		if(token != TOKEN_ADMIN && token != idAloj) {
-			throw new BusinessLogicException("No tiene permisos para realizar esta acción");
-		}
+		validarToken(idAloj, token);
 		
 		DAOCliente dao = new DAOCliente();
 		
@@ -2582,9 +2627,9 @@ public class AlohAndesTransactionManager {
 	//RFC12
 	//-----------------------------------------------------------------
 	
-	public List<RFC12> darFuncionamiento(Integer token, Integer anio) throws Exception{
+	public List<RFC12> darFuncionamiento(Long token, Integer anio) throws Exception{
 		
-		if(token != TOKEN_ADMIN) {
+		if(!token.equals(TOKEN_ADMIN)) {
 			throw new BusinessLogicException("Únicamente el administrador puede realizar esta consulta");
 		}
 		
@@ -2627,9 +2672,9 @@ public class AlohAndesTransactionManager {
 	//RFC13
 	//-----------------------------------------------------------------
 	
-	public List<RFC13> darBuenosClientes(Integer token) throws Exception{
+	public List<RFC13> darBuenosClientes(Long token) throws Exception{
 		
-		if(token != TOKEN_ADMIN) {
+		if(!token.equals(TOKEN_ADMIN)) {
 			throw new BusinessLogicException("Únicamente el administrador puede realizar esta consulta");
 		}
 		

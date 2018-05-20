@@ -426,7 +426,7 @@ public class DAOCliente {
 		return respuesta;
 	}
 	
-	public List<Cliente> getClientesConReservaEnRango(Integer alojamiento, Date cotaInferior, Date cotaSuperior, String ordenamiento) throws Exception{
+	public List<Cliente> getClientesConReservaEnRango(Long alojamiento, Date cotaInferior, Date cotaSuperior, String ordenamiento) throws Exception{
 		
 		String sql = String.format("SELECT CLIENTES.*\r\n" + 
 				"FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE =  CLIENTES.CARNET_UNIANDES \r\n" + 
@@ -454,7 +454,7 @@ public class DAOCliente {
 		return resp;
 	}
 	
-	public List<RFC10> getClientesConReservaEnRangoAgrupando(Integer alojamiento, Date cotaInferior, Date cotaSuperior, String agrupamiento, String ordenamiento) throws Exception{
+	public List<RFC10> getClientesConReservaEnRangoAgrupando(Long alojamiento, Date cotaInferior, Date cotaSuperior, String agrupamiento, String ordenamiento) throws Exception{
 		
 		String sql = String.format("SELECT %1$s AS AGRUPAMIENTO, COUNT(*) AS APARICIONES FROM \r\n"
 				+ "(SELECT CLIENTES.* \r\n" + 
@@ -485,7 +485,7 @@ public class DAOCliente {
 		return resp;
 	}
 	
-	public List<Cliente> getClientesSinReservaEnRango(Integer alojamiento, Date cotaInferior, Date cotaSuperior, String ordenamiento) throws Exception{
+	public List<Cliente> getClientesSinReservaEnRango(Long alojamiento, Date cotaInferior, Date cotaSuperior, String ordenamiento) throws Exception{
 				
 		String sql = String.format("SELECT CLIENTES.*\r\n" + 
 				"FROM(\r\n" +  
@@ -523,7 +523,7 @@ public class DAOCliente {
 	}
 	
 	
-	public List<RFC10> getClientesSinReservaEnRangoAgrupando(Integer alojamiento, Date cotaInferior, Date cotaSuperior,String agrupamiento, String ordenamiento) throws Exception{
+	public List<RFC10> getClientesSinReservaEnRangoAgrupando(Long alojamiento, Date cotaInferior, Date cotaSuperior,String agrupamiento, String ordenamiento) throws Exception{
 		
 		String sql = String.format("SELECT %1$s AS AGRUPAMIENTO, COUNT(*) AS APARICIONES \r\n"
 				+ "FROM (SELECT CLIENTES.*\r\n" + 
