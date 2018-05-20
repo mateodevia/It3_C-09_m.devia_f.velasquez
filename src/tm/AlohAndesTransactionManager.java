@@ -1889,8 +1889,12 @@ public class AlohAndesTransactionManager {
 		// double dineroRecibido = 0;
 
 		try {
+			
+			
 			this.conn = darConexion();
 
+			conn.setAutoCommit(false);
+			
 			dao.setConn(conn);
 			// ArrayList<Reserva> reservas = dao.getReservas();
 
@@ -1919,8 +1923,10 @@ public class AlohAndesTransactionManager {
 			System.out.println("F I AC " + fi);
 			System.out.println("F IF A " + ff);
 			lista = dao.getDineroDates(fi, ff);
+			conn.commit();
 
 		} catch (SQLException sqlException) {
+			conn.rollback();
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
 			throw sqlException;
@@ -1948,91 +1954,6 @@ public class AlohAndesTransactionManager {
 		return lista;
 	}
 
-	/*
-	 * @SuppressWarnings("deprecation") public Double
-	 * dineroRecibidoAnioActualOp(Long token) throws Exception {
-	 * 
-	 * DAOReserva dao = new DAOReserva(); double dineroRecibido = 0.0;
-	 * DAOAlojamiento daoAl = new DAOAlojamiento(); Alojamiento al; try { this.conn
-	 * = darConexion(); daoAl.setConn(conn); dao.setConn(conn); ArrayList<Reserva>
-	 * reservas = dao.getReservas();
-	 * 
-	 * Date fechaInicio = new Date(System.currentTimeMillis());
-	 * System.out.println("FECHA INICIO " + fechaInicio);
-	 * System.out.println("CURRENT MILOS " + System.currentTimeMillis());
-	 * fechaInicio.setMonth(0); fechaInicio.setDate(1);
-	 * 
-	 * Date fechFin = new Date(System.currentTimeMillis());
-	 * 
-	 * for (int i = 0; i < reservas.size(); i++) {
-	 * 
-	 * if (reservas.get(i).getFechaFin().compareTo(fechaInicio) > 0 &&
-	 * reservas.get(i).getFechaFin().compareTo(fechFin) < 0) {
-	 * 
-	 * al = daoAl.findAlojamientoById(reservas.get(i).getAlojamiento());
-	 * 
-	 * if (al.getOperador().equals(token)) { dineroRecibido = dineroRecibido +
-	 * reservas.get(i).getPrecioReserva(); } } }
-	 * 
-	 * } catch (SQLException sqlException) {
-	 * System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
-	 * sqlException.printStackTrace(); throw sqlException; } catch
-	 * (BusinessLogicException be) {
-	 * System.err.println("[EXCEPTION] BusinessLogicException: " + be.getMessage());
-	 * be.printStackTrace(); throw be; } catch (Exception exception) {
-	 * System.err.println("[EXCEPTION] General Exception:" +
-	 * exception.getMessage()); exception.printStackTrace(); throw exception; }
-	 * finally { try { dao.cerrarRecursos(); daoAl.cerrarRecursos(); if (this.conn
-	 * != null) { this.conn.close(); } } catch (SQLException exception) {
-	 * System.err.println("[EXCEPTION] SQLException While Closing Resources:" +
-	 * exception.getMessage()); exception.printStackTrace(); throw exception; } }
-	 * 
-	 * return dineroRecibido; }
-	 */
-	/*
-	 * @SuppressWarnings("deprecation") public Double
-	 * dineroRecibidoAnioCorridoOp(Long token) throws Exception {
-	 * 
-	 * DAOReserva dao = new DAOReserva();
-	 * 
-	 * double dineroRecibido = 0;
-	 * 
-	 * DAOAlojamiento daoAl = new DAOAlojamiento(); Alojamiento al;
-	 * 
-	 * try { this.conn = darConexion();
-	 * 
-	 * daoAl.setConn(conn); dao.setConn(conn); ArrayList<Reserva> reservas =
-	 * dao.getReservas();
-	 * 
-	 * // Hace el corte por meses, primer dÃ­a del mismo mes hace un aÃ±o a primer dÃ­a
-	 * // del mes actual. Date fechaInicio = new Date(System.currentTimeMillis());
-	 * fechaInicio.setDate(1); fechaInicio.setYear(fechaInicio.getYear() - 1);
-	 * 
-	 * Date fechFin = new Date(System.currentTimeMillis()); fechFin.setDate(1);
-	 * 
-	 * for (int i = 0; i < reservas.size(); i++) {
-	 * 
-	 * if (reservas.get(i).getFechaFin().compareTo(fechaInicio) > 0 &&
-	 * reservas.get(i).getFechaFin().compareTo(fechFin) < 0) {
-	 * 
-	 * al = daoAl.findAlojamientoById(reservas.get(i).getAlojamiento());
-	 * 
-	 * if (al.getOperador().equals(token)) { dineroRecibido = dineroRecibido +
-	 * reservas.get(i).getPrecioReserva(); } } }
-	 * 
-	 * } catch (SQLException sqlException) {
-	 * System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
-	 * sqlException.printStackTrace(); throw sqlException; } catch (Exception
-	 * exception) { System.err.println("[EXCEPTION] General Exception:" +
-	 * exception.getMessage()); exception.printStackTrace(); throw exception; }
-	 * finally { try { dao.cerrarRecursos(); daoAl.cerrarRecursos(); if (this.conn
-	 * != null) { this.conn.close(); } } catch (SQLException exception) {
-	 * System.err.println("[EXCEPTION] SQLException While Closing Resources:" +
-	 * exception.getMessage()); exception.printStackTrace(); throw exception; } }
-	 * 
-	 * return dineroRecibido; }
-	 */
-
 	// ------------------------------------------------------------------------------------------
 	// RFC2
 	// ------------------------------------------------------------------------------------------
@@ -2044,13 +1965,20 @@ public class AlohAndesTransactionManager {
 		DAOOfertaAlojamiento dao = new DAOOfertaAlojamiento();
 
 		try {
+			
+			
 			this.conn = darConexion();
 
+			conn.setAutoCommit(false);
+			
 			dao.setConn(conn);
 
 			ofertas = dao.getOfertasMasPopulares();
+			
+			conn.commit();
 
 		} catch (SQLException sqlException) {
+			conn.rollback();
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
 			throw sqlException;
@@ -2097,11 +2025,14 @@ public class AlohAndesTransactionManager {
 		try {
 			this.conn = darConexion();
 
+			conn.setAutoCommit(false);
+			
 			dao.setConn(conn);
 
 			indices = dao.getIndiceOcupacion();
-
+			conn.commit();
 		} catch (SQLException sqlException) {
+			conn.rollback();
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
 			throw sqlException;
@@ -2141,7 +2072,9 @@ public class AlohAndesTransactionManager {
 			DAOServicio daoServ = new DAOServicio();
 
 			daoServ.setConn(conn);
-
+			
+			conn.setAutoCommit(false);
+			
 			for (int i = 0; i < servi.size(); i++) {
 
 				Servicio servicio = daoServ.findServicioByTipo(servi.get(i));
@@ -2160,8 +2093,11 @@ public class AlohAndesTransactionManager {
 
 			alojamientos = (ArrayList<Alojamiento>) dao.getAlojamientosEntreFechasConServicios(fechaInicio, fechaFin,
 					servicios);
+			
+			conn.commit();
 
 		} catch (SQLException sqlException) {
+			conn.rollback();
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
 			throw sqlException;
@@ -2195,10 +2131,14 @@ public class AlohAndesTransactionManager {
 			this.conn = darConexion();
 
 			dao.setConn(conn);
-
+			
+			conn.setAutoCommit(false);
+			
 			resp = dao.getUsoTipoCliente();
 
+			conn.commit();
 		} catch (SQLException sqlException) {
+			conn.rollback();
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
 			throw sqlException;
@@ -2234,9 +2174,12 @@ public class AlohAndesTransactionManager {
 
 			dao.setConn(conn);
 
+			
+			conn.setAutoCommit(false);
 			resp = dao.getUsoCliente(idCliente);
-
+			conn.commit();
 		} catch (SQLException sqlException) {
+			conn.rollback();
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
 			throw sqlException;
@@ -2285,9 +2228,13 @@ public class AlohAndesTransactionManager {
 					throw new BusinessLogicException("El tipo de alojamiento no coincide con ningno de los permitidos");
 				}
 				
+				conn.setAutoCommit(false);
 				resp = dao.getUnidadConMayor(tipoAl, unidadTiempo);
+				conn.commit();
 
 			} catch (SQLException sqlException) {
+				
+				conn.rollback();
 				System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 				sqlException.printStackTrace();
 				throw sqlException;
@@ -2323,10 +2270,13 @@ public class AlohAndesTransactionManager {
 
 			dao.setConn(conn);
 			
+			conn.setAutoCommit(false);
 			
 			resp = dao.getClientesFrecuentesOfAl(idAl);
 			
+			conn.commit();
 		} catch (SQLException sqlException) {
+			conn.rollback();
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
 			throw sqlException;
@@ -2362,10 +2312,17 @@ public class AlohAndesTransactionManager {
 		try {
 			this.conn = darConexion();
 
+			
+			
 			dao.setConn(conn);
 			
+			conn.setAutoCommit(false);
+			
 			resp = dao.getAlojamientosBajaDemanda();
+			
+			conn.commit();
 		} catch (SQLException sqlException) {
+			conn.rollback();
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
 			throw sqlException;
@@ -2452,9 +2409,12 @@ public class AlohAndesTransactionManager {
 			if(!determinarValidezAgrupamientoOrdenamiento(agrupamiento, ordenamiento))
 				throw new BusinessLogicException("La combinación agrupamiento/ordenamiento usada, no es válida");
 			
+			
+			conn.setAutoCommit(false);
 			resp = dao.getClientesConReservaEnRangoAgrupando(idAloj, cotaInferior, cotaSuperior, determinarAgrupamiento(agrupamiento), determinarOrdenamiento(ordenamiento, true));
-		
+			conn.commit();
 		} catch (SQLException sqlException) {
+			conn.rollback();
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
 			throw sqlException;
@@ -2494,9 +2454,11 @@ public class AlohAndesTransactionManager {
 			if(!determinarValidezAgrupamientoOrdenamiento(null, ordenamiento))
 				throw new BusinessLogicException("La combinación agrupamiento/ordenamiento usada, no es válida");
 			
+			conn.setAutoCommit(false);
 			resp = dao.getClientesConReservaEnRango(idAloj, cotaInferior, cotaSuperior, determinarOrdenamiento(ordenamiento, false));
-			
+			conn.commit();
 		} catch (SQLException sqlException) {
+			conn.rollback();
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
 			throw sqlException;
@@ -2541,9 +2503,11 @@ public class AlohAndesTransactionManager {
 				throw new BusinessLogicException("La combinación ordenamiento / agrupamiento no es válida");
 			}
 			
+			conn.setAutoCommit(false);
 			resp = dao.getClientesSinReservaEnRango(idAloj, cotaInferior, cotaSuperior, determinarOrdenamiento(ordenamiento, false));
-			
+			conn.commit();
 		} catch (SQLException sqlException) {
+			conn.rollback();
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
 			throw sqlException;
@@ -2583,9 +2547,11 @@ public class AlohAndesTransactionManager {
 			if(!determinarValidezAgrupamientoOrdenamiento(agrupamiento, ordenamiento))
 				throw new BusinessLogicException("La combinación agrupamiento/ordenamiento usada, no es válida");
 			
+			conn.setAutoCommit(false);
 			resp = dao.getClientesSinReservaEnRangoAgrupando(idAloj, cotaInferior, cotaSuperior, determinarAgrupamiento(agrupamiento), determinarOrdenamiento(ordenamiento, true));
-		
+			conn.commit();
 		} catch (SQLException sqlException) {
+			conn.rollback();
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
 			throw sqlException;
@@ -2633,9 +2599,12 @@ public class AlohAndesTransactionManager {
 
 			dao.setConn(conn);
 			
+			conn.setAutoCommit(false);
 			resp = dao.getBuenosClientes();
+			conn.commit();
 			
 		} catch (SQLException sqlException) {
+			conn.rollback();
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
 			throw sqlException;
