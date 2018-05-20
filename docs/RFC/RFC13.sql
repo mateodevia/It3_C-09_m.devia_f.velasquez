@@ -1,12 +1,18 @@
+
+
+/*
+Hola. La consulta de este documento no fue la utilizada en el programa.
+Fue la primera versión de la consulta creada. Se guarda para referencia.
+
+Para ver la consulta optimizada, por favor vaya a RFC13_OPTIMIZADO.sql que debería encontrarse en la misma carpeta que este archivo.
+*/
+
+
+
 /*Los buenos clientes son de tres tipos: aquellos que hacen reservas en AlohAndes al menos una vez al mes, 
 aquellos que siempre reservan alojamientos costosos (Entiéndase costoso, 
 por ejemplo, como mayor a USD 150 por noche) y aquellos que siempre reservan suites*/
 
-/*-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X*/
-/*--X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-*/
---IMPORTANTÍSIMO!!!!!! SE DEBERÍA TENER EN CUENTA SI LA RESERVA ESTÁ CANCELADA??????--
-/*-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X*/
-/*--X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-*/
 
 
 /*SELECT TODOS LOS CLIENTES CUYAS RESERVAS SON TODAS MAYORAS A 150 USD*/

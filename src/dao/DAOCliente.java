@@ -373,7 +373,7 @@ public class DAOCliente {
 				"    \r\n" + 
 				"    (   SELECT CLIENTES.CARNET_UNIANDES, COUNT(DISTINCT (EXTRACT(MONTH FROM RESERVAS.FECHA_INICIO) || '/' || EXTRACT (YEAR FROM RESERVAS.FECHA_INICIO))) AS MESES\r\n" + 
 				"        FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE = CLIENTES.CARNET_UNIANDES\r\n" + 
-				"        WHERE RESERVAS.FECHA_INICIO <= CURRENT_DATE \r\n" + 
+				"        WHERE RESERVAS.ESTADO = 'RESERVADA' AND RESERVAS.FECHA_INICIO <= CURRENT_DATE \r\n" + 
 				"        GROUP BY CLIENTES.CARNET_UNIANDES\r\n" + 
 				"    ) MESES_RESERVADOS\r\n" + 
 				"    ON MESES_RESERVADOS.CARNET_UNIANDES = MESES_CREACION.CARNET_UNIANDES\r\n" + 
@@ -383,22 +383,22 @@ public class DAOCliente {
 				"    UNION \r\n" + 
 				"    \r\n" + 
 				"    (   \r\n" + 
-				"        SELECT CARNET_UNIANDES, '2' AS JUSTIFICACION\r\n" + 
+				"        SELECT CARNET_UNIANDES, '1' AS JUSTIFICACION\r\n" + 
 				"        FROM\r\n" + 
 				"            (   SELECT CLIENTES.CARNET_UNIANDES\r\n" + 
-				"                FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE = CLIENTES.CARNET_UNIANDES INNER JOIN OFERTAS_ALOJAMIENTOS ON OFERTAS_ALOJAMIENTOS.ID_AL = RESERVAS.ID_AL_OF\r\n" + 
+				"                FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE = CLIENTES.CARNET_UNIANDES\r\n" + 
 				"                GROUP BY CLIENTES.CARNET_UNIANDES\r\n" + 
 				"\r\n" + 
 				"                MINUS\r\n" + 
 				"\r\n" + 
 				"                SELECT CLIENTES.CARNET_UNIANDES\r\n" + 
 				"                FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE = CLIENTES.CARNET_UNIANDES INNER JOIN OFERTAS_ALOJAMIENTOS ON OFERTAS_ALOJAMIENTOS.ID_AL = RESERVAS.ID_AL_OF\r\n" + 
-				"                WHERE OFERTAS_ALOJAMIENTOS.PRECIO > 433000)\r\n" + 
+				"                WHERE RESERVAS.ESTADO = 'RESERVADA' AND OFERTAS_ALOJAMIENTOS.PRECIO > 433000)\r\n" + 
 				"    )\r\n" + 
 				"    \r\n" + 
 				"    UNION\r\n" + 
 				"    \r\n" + 
-				"    (   SELECT CARNET_UNIANDES, '3' AS JUSTIFICACION \r\n" + 
+				"    (   SELECT CARNET_UNIANDES, '2' AS JUSTIFICACION \r\n" + 
 				"        FROM\r\n" + 
 				"            (   SELECT CLIENTES.CARNET_UNIANDES  \r\n" + 
 				"                FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE = CLIENTES.CARNET_UNIANDES INNER JOIN HABS_HOTELES ON HABS_HOTELES.ID_AL = RESERVAS.ID_AL_OF\r\n" + 
@@ -408,15 +408,19 @@ public class DAOCliente {
 				"\r\n" + 
 				"                SELECT CLIENTES.CARNET_UNIANDES\r\n" + 
 				"                FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE = CLIENTES.CARNET_UNIANDES INNER JOIN HABS_HOTELES ON HABS_HOTELES.ID_AL = RESERVAS.ID_AL_OF\r\n" + 
-				"                WHERE TIPO = 'SEMISUITE' OR TIPO = 'ESTANDAR'\r\n" + 
+				"                WHERE RESERVAS.ESTADO = 'RESERVADA' AND TIPO = 'SEMISUITE' OR TIPO = 'ESTANDAR'\r\n" + 
 				"            )  \r\n" + 
 				"    )\r\n" + 
 				")MT\r\n" + 
 				"INNER JOIN CLIENTES\r\n" + 
 				"ON MT.CARNET_UNIANDES = CLIENTES.CARNET_UNIANDES";
 		
+
+		System.out.println(sql);
+		
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery( sql );
+		
 		
 		while(rs.next()) {
 			respuesta.add(new RFC13(convertResultSetToCliente(rs), rs.getInt("JUSTIFICACION")));
@@ -430,7 +434,7 @@ public class DAOCliente {
 		
 		String sql = String.format("SELECT CLIENTES.*\r\n" + 
 				"FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE =  CLIENTES.CARNET_UNIANDES \r\n" + 
-				"WHERE RESERVAS.ID_AL_OF = %1$s AND '%2$s' <= RESERVAS.FECHA_INICIO AND RESERVAS.FECHA_FIN <= '%3$s'"
+				"WHERE RESERVAS.ESTADO = 'RESERVADA' AND RESERVAS.ID_AL_OF = %1$s AND '%2$s' <= RESERVAS.FECHA_INICIO AND RESERVAS.FECHA_FIN <= '%3$s'"
 				, alojamiento
 				, Fechas.pasarDateAFormatoSQL(cotaInferior)
 				, Fechas.pasarDateAFormatoSQL(cotaSuperior));
@@ -459,7 +463,7 @@ public class DAOCliente {
 		String sql = String.format("SELECT %1$s AS AGRUPAMIENTO, COUNT(*) AS APARICIONES FROM \r\n"
 				+ "(SELECT CLIENTES.* \r\n" + 
 				"FROM CLIENTES INNER JOIN RESERVAS ON RESERVAS.ID_CLIENTE =  CLIENTES.CARNET_UNIANDES \r\n" + 
-				"WHERE RESERVAS.ID_AL_OF = %2$s AND '%3$s' <= RESERVAS.FECHA_INICIO AND RESERVAS.FECHA_FIN <= '%4$s' )\r\n"+
+				"WHERE RESERVAS.ESTADO = 'RESERVADA'AND RESERVAS.ID_AL_OF = %2$s AND '%3$s' <= RESERVAS.FECHA_INICIO AND RESERVAS.FECHA_FIN <= '%4$s' )\r\n"+
 				"GROUP BY %1$s"
 				, agrupamiento
 				, alojamiento
@@ -496,7 +500,7 @@ public class DAOCliente {
 				"\r\n" + 
 				"    SELECT id_cliente\r\n" + 
 				"    FROM RESERVAS\r\n" + 
-				"    WHERE ID_AL_OF = %1$s  AND '%2$s' <= FECHA_INICIO AND FECHA_FIN <= '%3$s' \r\n" + 
+				"    WHERE RESERVAS.ESTADO = 'RESERVADA' AND ID_AL_OF = %1$s  AND '%2$s' <= FECHA_INICIO AND FECHA_FIN <= '%3$s' \r\n" + 
 				")T INNER JOIN CLIENTES ON T.CARNET_UNIANDES = CLIENTES.CARNET_UNIANDES"
 				, alojamiento
 				, Fechas.pasarDateAFormatoSQL(cotaInferior)
@@ -535,7 +539,7 @@ public class DAOCliente {
 				"\r\n" + 
 				"    SELECT id_cliente\r\n" + 
 				"    FROM RESERVAS\r\n" + 
-				"    WHERE ID_AL_OF = %2$s  AND '%3$s' <= FECHA_INICIO AND FECHA_FIN <= '%4$s' \r\n" + 
+				"    WHERE RESERVAS.ESTADO = 'RESERVADA' AND ID_AL_OF = %2$s  AND '%3$s' <= FECHA_INICIO AND FECHA_FIN <= '%4$s' \r\n" + 
 				")T INNER JOIN CLIENTES ON T.CARNET_UNIANDES = CLIENTES.CARNET_UNIANDES) \r\n" +
 				"GROUP BY %1$s"
 				, agrupamiento

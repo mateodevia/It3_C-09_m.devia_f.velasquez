@@ -1,3 +1,13 @@
+
+/*
+Hola. La consulta de este documento no fue la utilizada en el programa.
+Fue la primera versión de la consulta creada. Se guarda para referencia.
+
+Para ver la consulta optimizada, por favor vaya a RFC13_OPTIMIZADO.sql que debería encontrarse en la misma carpeta que este archivo.
+*/
+
+
+
 create table semanas( numero integer);
 insert into semanas (numero)values(1);
 insert into semanas (numero)values(2);
