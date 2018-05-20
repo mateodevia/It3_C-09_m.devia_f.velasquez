@@ -1041,6 +1041,7 @@ public class AlohAndesTransactionManager {
 		} catch (SQLException sqlException) {
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
+			conn.rollback();
 			throw sqlException;
 		} catch (BusinessLogicException be) {
 			System.err.println("[EXCEPTION] BusinessLogicException: " + be.getMessage());
@@ -1195,6 +1196,7 @@ public class AlohAndesTransactionManager {
 		} catch (SQLException sqlException) {
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
+			conn.rollback();
 			throw sqlException;
 		} catch (BusinessLogicException be) {
 			System.err.println("[EXCEPTION] BusinessLogicException: " + be.getMessage());
@@ -1235,6 +1237,7 @@ public class AlohAndesTransactionManager {
 		try {
 			this.conn = darConexion();
 
+			conn.setAutoCommit(false);
 			dao.setConn(conn);
 			daoOA.setConn(conn);
 
@@ -1293,10 +1296,11 @@ public class AlohAndesTransactionManager {
 			System.out.println("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
 
 			dao.cancelarReserva(reserva, costoMulta);
-
+			conn.commit();
 		} catch (SQLException sqlException) {
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
+			conn.rollback();
 			throw sqlException;
 		} catch (BusinessLogicException be) {
 			System.err.println("[EXCEPTION] BusinessLogicException: " + be.getMessage());
@@ -1827,6 +1831,7 @@ public class AlohAndesTransactionManager {
 			this.conn = darConexion();
 
 			dao.setConn(conn);
+			conn.setAutoCommit(false);
 			// ArrayList<Reserva> reservas = dao.getReservas();
 
 			Date fechaInicio = new Date(System.currentTimeMillis());
@@ -1851,8 +1856,10 @@ public class AlohAndesTransactionManager {
 			System.out.println("F I AA " + fi);
 			System.out.println("F IF AA " + ff);
 			lista = dao.getDineroDates(fi, ff);
+			conn.commit();
 
 		} catch (SQLException sqlException) {
+			conn.rollback();
 			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
 			sqlException.printStackTrace();
 			throw sqlException;
