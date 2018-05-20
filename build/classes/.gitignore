@@ -1,3 +1,7 @@
-/rest/
-/dao/
 /auxiliary/
+/dao/
+/exceptions/
+/rest/
+/tipo/
+/tm/
+/vos/
