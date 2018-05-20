@@ -2,6 +2,7 @@ package rest;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -106,6 +107,22 @@ public class ReservaService {
 		}
 		
 	}
+	
+	@DELETE
+	public Response poblarTabla() {
+		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
+		
+		try {
+			tm.poblarTabla();
+			return Response.status(200).entity("se poblo la tabla").build();
+		}
+		catch(BusinessLogicException e) {
+			return Response.status(400).entity(doErrorMessage(e)).build();
+		}
+		catch(Exception e) {
+			return Response.status(500).entity(doErrorMessage(e)).build();
+		}
+	}	
 	
 	@SuppressWarnings("deprecation")
 	private void corregirDesfase(Reserva reserva) {

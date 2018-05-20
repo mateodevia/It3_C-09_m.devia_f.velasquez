@@ -30,6 +30,7 @@ import dao.DAOHabHotel;
 import dao.DAOHabVivienda;
 import dao.DAOHostal;
 import dao.DAOHotel;
+import dao.DAONumSemanas;
 import dao.DAOOfertaAlojamiento;
 import dao.DAOOperador;
 import dao.DAOPersonaNatural;
@@ -2629,5 +2630,39 @@ public class AlohAndesTransactionManager {
 
 	}
 	
+	
+	
+	public void poblarTabla() throws Exception{
+		
+		DAONumSemanas dao = new DAONumSemanas();
+		
+		try {
+			this.conn = darConexion();
+
+			dao.setConn(conn);
+			
+			dao.poblarTabla();
+			
+		} catch (SQLException sqlException) {
+			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
+			sqlException.printStackTrace();
+			throw sqlException;
+		} catch (Exception exception) {
+			System.err.println("[EXCEPTION] General Exception:" + exception.getMessage());
+			exception.printStackTrace();
+			throw exception;
+		} finally {
+			try {
+				dao.cerrarRecursos();
+				if (this.conn != null) {
+					this.conn.close();
+				}
+			} catch (SQLException exception) {
+				System.err.println("[EXCEPTION] SQLException While Closing Resources:" + exception.getMessage());
+				exception.printStackTrace();
+				throw exception;
+			}
+		}
+	}
 	
 }
