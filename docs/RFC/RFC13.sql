@@ -104,7 +104,7 @@ SELECT * FROM (
                                                           WHERE TIPO = 'SEMISUITE' OR TIPO = 'ESTANDAR'
                                                       ) THEN 2
                         END) AS JUSTIFICACION
-    FROM CLIENTES)
-WHERE JUSTIFICACION IS NOT NULL;
-
+    FROM CLIENTES);
+--Esto aumenta el tiempo de ejecución en un 800%!!!!
+--WHERE JUSTIFICACION IS NOT NULL;
 

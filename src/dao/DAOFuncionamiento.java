@@ -85,7 +85,7 @@ public class DAOFuncionamiento {
 		// Metodos de Comunicacion con la BD
 		//----------------------------------------------------------------------------------------------
 		
-		public void getFuncionamiento(Integer anio) {
+		public void getFuncionamiento(Integer anio) throws SQLException {
 					
 		ArrayList<RFC12> respuesta = new ArrayList<RFC12>();
 		
@@ -114,6 +114,20 @@ public class DAOFuncionamiento {
 				"where rownum = 1) alojamiento_mayor__ocupacion\r\n" + 
 				"from semanas", anio);
 		
+		Statement st = conn.createStatement();
+		ResultSet rs = st.executeQuery(sqlAlojMas);
+		
+		RFC12 rf;
+		int semana;
+		while(rs.next()) {
+			semana = rs.getInt("SEMANA");
+			rf = respuesta.get(semana);
+			rf.setAlojamientoMasOcupacion(rs.getString("ALOJAMIENTO_MAYOR_OCUPACION"));
+			
+		}
+		
+		String sqlAlojMenos = String.format(""
+				, anio);
 			
 		/*ArrayList<Cliente> clientes = new ArrayList<Cliente>();
 

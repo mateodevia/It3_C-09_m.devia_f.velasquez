@@ -49,7 +49,8 @@ public class FuncionamientoService {
 	// SERVICIOS
 	// ----------------------------
 
-	@GET
+	//TODO
+	/*@GET
 	public Response getCliente(@QueryParam("anio") Integer anio) {
 		
 		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
@@ -63,6 +64,6 @@ public class FuncionamientoService {
 		catch(Exception e) {
 			return Response.status(500).entity(doErrorMessage(e)).build();
 		
-	}
+	}*/
 	
 }
