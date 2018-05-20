@@ -1,6 +1,7 @@
 package rest;
 
 import java.sql.Date;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
@@ -13,6 +14,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import auxiliary.RFC12;
 import exceptions.BusinessLogicException;
 import tm.AlohAndesTransactionManager;
 import vos.Cliente;
@@ -49,21 +51,23 @@ public class FuncionamientoService {
 	// SERVICIOS
 	// ----------------------------
 
-	//TODO
-	/*@GET
-	public Response getCliente(@QueryParam("anio") Integer anio) {
+	@GET
+	public Response getFuncionamiento(@QueryParam("token") Integer token, @QueryParam("anio") Integer anio) {
 		
 		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
 		
 		try {
-			return Response.status(200).entity(//TODO).build();
+			
+			List<RFC12> rpta = tm.darFuncionamiento(token, anio);
+			
+			return Response.status(200).entity(rpta).build();
 		}
 		catch(BusinessLogicException e) {
 			return Response.status(400).entity(doErrorMessage(e)).build();
 		}
 		catch(Exception e) {
 			return Response.status(500).entity(doErrorMessage(e)).build();
-		
-	}*/
+		}
+	}
 	
 }

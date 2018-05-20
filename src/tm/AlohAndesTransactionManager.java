@@ -13,6 +13,7 @@ import java.util.Properties;
 import auxiliary.Log;
 import auxiliary.RFC1;
 import auxiliary.RFC10;
+import auxiliary.RFC12;
 import auxiliary.RFC13;
 import auxiliary.RFC3;
 import auxiliary.UsoCliente;
@@ -24,6 +25,7 @@ import dao.DAOAlojamiento;
 import dao.DAOApartamento;
 import dao.DAOCasa;
 import dao.DAOCliente;
+import dao.DAOFuncionamiento;
 import dao.DAOHabHost;
 import dao.DAOHabHostal;
 import dao.DAOHabHotel;
@@ -2614,7 +2616,46 @@ public class AlohAndesTransactionManager {
 	//RFC12
 	//-----------------------------------------------------------------
 	
-	
+	public List<RFC12> darFuncionamiento(Integer token, Integer anio) throws Exception{
+		
+		if(token != TOKEN_ADMIN) {
+			throw new BusinessLogicException("Únicamente el administrador puede realizar esta consulta");
+		}
+		
+		DAOFuncionamiento dao = new DAOFuncionamiento();
+		List<RFC12> resp = new ArrayList<RFC12>();
+		
+		try {
+			this.conn = darConexion();
+
+			dao.setConn(conn);
+			
+			resp = dao.getFuncionamiento(anio);
+			
+		} catch (SQLException sqlException) {
+			System.err.println("[EXCEPTION] SQLException:" + sqlException.getMessage());
+			sqlException.printStackTrace();
+			throw sqlException;
+		} catch (Exception exception) {
+			System.err.println("[EXCEPTION] General Exception:" + exception.getMessage());
+			exception.printStackTrace();
+			throw exception;
+		} finally {
+			try {
+				dao.cerrarRecursos();
+				if (this.conn != null) {
+					this.conn.close();
+				}
+			} catch (SQLException exception) {
+				System.err.println("[EXCEPTION] SQLException While Closing Resources:" + exception.getMessage());
+				exception.printStackTrace();
+				throw exception;
+			}
+		}
+		
+		return resp;
+
+	}
 	
 	//-----------------------------------------------------------------
 	//RFC13

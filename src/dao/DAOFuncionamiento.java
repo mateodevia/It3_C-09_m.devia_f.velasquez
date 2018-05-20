@@ -79,73 +79,93 @@ public class DAOFuncionamiento {
 					}
 			}
 		}
-		
+
 
 		//----------------------------------------------------------------------------------------------
 		// Metodos de Comunicacion con la BD
 		//----------------------------------------------------------------------------------------------
-		
-		public void getFuncionamiento(Integer anio) throws SQLException {
-					
-		ArrayList<RFC12> respuesta = new ArrayList<RFC12>();
-		
-		for(int i = 1; i<53; i++) {
-			
-			respuesta.add(new RFC12(i));	
-		}
-		
-		String sqlAlojMas = String.format("select numero as semana, (select concat(alojamiento, concat(', numero de reservas: ',reservas))aloj_reserv\r\n" + 
-				"from(select concat('id: ',concat(id, concat(', capacidad: ', concat(capacidad,concat(', compartida: ', concat(compartida, concat(', tipo: ', concat(tipo, concat(', ubicacion: ', ubicacion))))))))) alojamiento, (select count(*)\r\n" + 
-				"        from (select FECHA_INICIO,\r\n" + 
-				"                    fecha_fin,\r\n" + 
-				"                    ID_AL_OF, \r\n" + 
-				"                    FECHA_CREACION_OF,         \r\n" + 
-				"                    case when extract(year from fecha_inicio) = %1$s then to_char(to_date(fecha_inicio), 'ww') else '0' end as semana_inicio, \r\n" + 
-				"                    case when extract(year from fecha_fin) = %1$s then to_char(to_date(fecha_fin), 'ww') else '52' end as semana_fin \r\n" + 
-				"                from reservas\r\n" + 
-				"                where extract(year from fecha_inicio) = %1$s or \r\n" + 
-				"                    extract(year from fecha_inicio) < %1$s  and (extract(year from fecha_fin) > %1$s or extract(year from fecha_fin) = %1$s) or \r\n" + 
-				"                    extract(year from fecha_fin) = %1$s or \r\n" + 
-				"                    extract(year from fecha_fin) > %1$s  and (extract(year from fecha_inicio) < %1$s or extract(year from fecha_inicio) = %1$s)\r\n" + 
-				"            )uno\r\n" + 
-				"        where (uno.semana_inicio < numero or uno.semana_inicio = numero) and (uno.semana_fin > numero or uno.semana_fin = numero) and UNO.ID_AL_OF = id) reservas\r\n" + 
-				"from alojamientos\r\n" + 
-				"order by reservas  desc)\r\n" + 
-				"where rownum = 1) alojamiento_mayor__ocupacion\r\n" + 
-				"from semanas", anio);
-		
-		Statement st = conn.createStatement();
-		ResultSet rs = st.executeQuery(sqlAlojMas);
-		
-		RFC12 rf;
-		int semana;
-		while(rs.next()) {
-			semana = rs.getInt("SEMANA");
-			rf = respuesta.get(semana);
-			rf.setAlojamientoMasOcupacion(rs.getString("ALOJAMIENTO_MAYOR_OCUPACION"));
-			
-		}
-		
-		String sqlAlojMenos = String.format(""
-				, anio);
-			
-		/*ArrayList<Cliente> clientes = new ArrayList<Cliente>();
 
-		String sql = String.format("SELECT * FROM %1$s.CLIENTES", USUARIO);
+		public ArrayList<RFC12> getFuncionamiento(Integer anio) throws SQLException {
 
-		Statement st = conn.createStatement();
-		ResultSet rs = st.executeQuery( sql );
-		
-//		PreparedStatement prepStmt = conn.prepareStatement(sql);
-//		recursos.add(prepStmt);
-//		ResultSet rs = prepStmt.executeQuery();
+			ArrayList<RFC12> respuesta = new ArrayList<RFC12>();
 
-		while (rs.next()) {
-			clientes.add(convertResultSetToCliente(rs));
-		}
-		
-		st.close();
-		return clientes;
-			*/
+			for(int i = 1; i<53; i++) {
+
+				respuesta.add(new RFC12(i));	
+			}
+
+			String sqlAloj = "select numero as semana, \r\n" + 
+					"        (select ('id: '||id_aloj||' capacidad: '||capacidad||' compartida: '||compartida||' tipo: '||tipo||' ubicacion: '||ubicacion||' operador: '||id_op||' numero de reservas: '||num_reserv) as alojamiento\r\n" + 
+					"        from (select id_aloj, num_reserv\r\n" + 
+					"                from(select id_aloj, num_reserv \r\n" + 
+					"                        from NUM_RESERV_ALOJ_SEM \r\n" + 
+					"                        where semana = numero and anio = "+anio+" \r\n" + 
+					"                        order by num_reserv desc\r\n" + 
+					"                    ) uno\r\n" + 
+					"                where rownum = 1\r\n" + 
+					"            ) dos\r\n" + 
+					"        inner join\r\n" + 
+					"        alojamientos\r\n" + 
+					"        on dos.id_aloj = alojamientos.id\r\n" + 
+					"        ) as alojamiento_mayor_ocupacion,\r\n" + 
+					"        (select ('id: '||id_aloj||' capacidad: '||capacidad||' compartida: '||compartida||' tipo: '||tipo||' ubicacion: '||ubicacion||' operador: '||id_op||' numero de reservas: '||num_reserv) as alojamiento\r\n" + 
+					"        from (select id_aloj, num_reserv\r\n" + 
+					"                from(select id_aloj, num_reserv \r\n" + 
+					"                        from NUM_RESERV_ALOJ_SEM \r\n" + 
+					"                        where semana = numero and anio = "+anio+" \r\n" +
+					"                        order by num_reserv asc\r\n" + 
+					"                    ) uno\r\n" + 
+					"                where rownum = 1\r\n" + 
+					"            ) dos\r\n" + 
+					"        inner join\r\n" + 
+					"        alojamientos\r\n" + 
+					"        on dos.id_aloj = alojamientos.id\r\n" + 
+					"        ) as alojamiento_menor_ocupacion\r\n" + 
+					"from semanas";
+
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery(sqlAloj);
+
+			RFC12 rf;
+			int semana;
+			while(rs.next()) {
+				semana = rs.getInt("SEMANA");
+				rf = respuesta.get(semana-1);
+				rf.setAlojamientoMasOcupacion(rs.getString("ALOJAMIENTO_MAYOR_OCUPACION"));
+				rf.setAlojamientoMenosOcupacion(rs.getString("ALOJAMIENTO_MENOR_OCUPACION"));
+			}
+
+			String sqlOperadores = "select numero as semana, (select ('id: '||id_op||' nombre: '||nombre||' tipo: '||tipo||' numero de reservas: '||num_reservas) as alojamiento\r\n" + 
+					"                            from (select *\r\n" + 
+					"                                    from (select id_op, sum(num_reserv) num_reservas from NUM_RESERV_ALOJ_SEM where semana = numero and anio = "+anio+" group by ID_OP order by num_reservas desc) seis\r\n" + 
+					"                                    where rownum = 1\r\n" + 
+					"                                )siete\r\n" + 
+					"                                inner join\r\n" + 
+					"                                operadores\r\n" + 
+					"                                on siete.id_op = operadores.id\r\n" + 
+					"                        )as operador_mas_solicitado,\r\n" + 
+					"\r\n" + 
+					"                        (select ('id: '||id_op||' nombre: '||nombre||' tipo: '||tipo||' numero de reservas: '||num_reservas) as alojamiento\r\n" + 
+					"                            from (select *\r\n" + 
+					"                                    from (select id_op, sum(num_reserv) num_reservas from NUM_RESERV_ALOJ_SEM where semana = numero and anio = "+anio+" group by ID_OP order by num_reservas asc) seis\r\n" + 
+					"                                    where rownum = 1\r\n" + 
+					"                                )siete\r\n" + 
+					"                                inner join\r\n" + 
+					"                                operadores\r\n" + 
+					"                                on siete.id_op = operadores.id\r\n" + 
+					"                        )as operador_menos_solicitado\r\n" + 
+					"from semanas";
+
+			rs = st.executeQuery(sqlOperadores);
+
+			while(rs.next()) {
+				semana = rs.getInt("SEMANA");
+				rf = respuesta.get(semana-1);
+				rf.setOperadorMasSolicitado(rs.getString("OPERADOR_MAS_SOLICITADO"));
+				rf.setOperadorMenosSolicitado(rs.getString("OPERADOR_MENOS_SOLICITADO"));
+
+			}
+			
+			return respuesta;
 		}
 }
