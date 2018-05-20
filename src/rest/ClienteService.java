@@ -114,7 +114,7 @@ public class ClienteService {
 	
 	@GET
 	@Path("/buenosclientes")
-	public Response getBuenosClientes(@QueryParam("token") Integer token) {
+	public Response getBuenosClientes(@QueryParam("token") Long token) {
 		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
 		
 		try {
@@ -130,7 +130,7 @@ public class ClienteService {
 	
 	@GET
 	@Path("/clientesreservasrango")
-	public Response darClientesConReservaEnRango(@QueryParam("token") Integer token, @QueryParam("alojamiento") Integer alojamiento, 
+	public Response darClientesConReservaEnRango(@QueryParam("token") Long token, @QueryParam("alojamiento") Long alojamiento, 
 			@QueryParam("fechaCotaInferior") Date fechaCotaInferior, @QueryParam("fechaCotaSuperior") Date fechaCotaSuperior,
 			@QueryParam("agrupamiento") Integer agrupamiento, @QueryParam("ordenamiento")Integer ordenamiento) {
 		
@@ -156,7 +156,7 @@ public class ClienteService {
 	
 	@GET
 	@Path("/clientessinreservasrango")
-	public Response darClientesSinReservaEnRango(@QueryParam("token") Integer token, @QueryParam("alojamiento") Integer alojamiento, 
+	public Response darClientesSinReservaEnRango(@QueryParam("token") Long token, @QueryParam("alojamiento") Long alojamiento, 
 			@QueryParam("fechaCotaInferior") Date fechaCotaInferior, @QueryParam("fechaCotaSuperior") Date fechaCotaSuperior,
 			@QueryParam("agrupamiento") Integer agrupamiento, @QueryParam("ordenamiento") Integer ordenamiento) {
 		

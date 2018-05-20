@@ -52,7 +52,7 @@ public class FuncionamientoService {
 	// ----------------------------
 
 	@GET
-	public Response getFuncionamiento(@QueryParam("token") Integer token, @QueryParam("anio") Integer anio) {
+	public Response getFuncionamiento(@QueryParam("token") Long token, @QueryParam("anio") Integer anio) {
 		
 		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
 		

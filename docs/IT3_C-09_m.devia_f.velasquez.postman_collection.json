@@ -131,6 +131,38 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "RFC12",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/It3_C-09_m.devia_f.velasquez/rest/funcionamiento?token=-1&anio=2012",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"It3_C-09_m.devia_f.velasquez",
+						"rest",
+						"funcionamiento"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "-1"
+						},
+						{
+							"key": "anio",
+							"value": "2012"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
