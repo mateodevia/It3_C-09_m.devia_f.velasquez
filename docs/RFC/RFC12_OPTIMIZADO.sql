@@ -130,3 +130,50 @@ select numero as semana, (select ('id: '||id_op||' nombre: '||nombre||' tipo: '|
                         )as operador_menos_solicitado
 from semanas;
 
+select numero as semana,    (select ('id: '||id_aloj||' capacidad: '||capacidad||' compartida: '||compartida||' tipo: '||tipo||' ubicacion: '||ubicacion||' operador: '||id_op||' numero de reservas: '||num_reserv) as alojamiento 
+					        from (select id_aloj, num_reserv
+					                from(select id_aloj, num_reserv 
+					                        from NUM_RESERV_ALOJ_SEM  
+					                        where semana = numero and anio = 2019 
+					                        order by num_reserv desc
+					                    ) uno
+					                where rownum = 1
+					            ) dos
+					        inner join 
+					        alojamientos 
+					        on dos.id_aloj = alojamientos.id 
+					        ) as alojamiento_mayor_ocupacion, 
+					        (select ('id: '||id_aloj||' capacidad: '||capacidad||' compartida: '||compartida||' tipo: '||tipo||' ubicacion: '||ubicacion||' operador: '||id_op||' numero de reservas: '||num_reserv) as alojamiento 
+					        from (select id_aloj, num_reserv
+					                from(select id_aloj, num_reserv 
+					                        from NUM_RESERV_ALOJ_SEM 
+					                        where semana = numero and anio = 2019
+					                        order by num_reserv asc
+					                    ) uno
+					                where rownum = 1 
+					            ) dos
+					        inner join
+					        alojamientos
+					        on dos.id_aloj = alojamientos.id
+					        ) as alojamiento_menor_ocupacion,
+					        (select ('id: '||id_op||' nombre: '||nombre||' tipo: '||tipo||' numero de reservas: '||num_reservas) as alojamiento
+					        from (select *
+					                from (select id_op, sum(num_reserv) num_reservas from NUM_RESERV_ALOJ_SEM where semana = numero and anio = 2019 group by ID_OP order by num_reservas desc) seis
+					                where rownum = 1
+					            )siete
+					            inner join
+					            operadores
+					            on siete.id_op = operadores.id
+					        )as operador_mas_solicitado,
+					 
+					        (select ('id: '||id_op||' nombre: '||nombre||' tipo: '||tipo||' numero de reservas: '||num_reservas) as alojamiento
+					        from (select *
+					                from (select id_op, sum(num_reserv) num_reservas from NUM_RESERV_ALOJ_SEM where semana = numero and anio = 2019 group by ID_OP order by num_reservas asc) seis
+					                where rownum = 1
+					            )siete
+					            inner join
+					            operadores
+					            on siete.id_op = operadores.id
+					        )as operador_menos_solicitado
+					from semanas;
+
